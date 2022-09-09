@@ -3,6 +3,8 @@ import requests
 import time
 import json
 from redash_toolbelt import Redash
+from dotenv import load_dotenv
+from os.path import join, dirname
 
 
 def create_query(api_key,
@@ -34,6 +36,27 @@ def create_query(api_key,
     return res.json()
 
 
+def search_query(client, search_name):
+    result = None
+    page = 1
+    while True:
+        queries = client.queries(page=page)
+        count = queries['count']
+        page_size = queries['page_size']
+        page = queries['page']
+
+        for query in queries['results']:
+            if query['name'] == search_name:
+                result = query
+                break
+        if count < (page_size * page):
+            break
+
+        page += 1
+
+    return result
+
+
 def poll_job(s, redash_url, job):
     # TODO: add timeout
     while job['status'] not in (3, 4):
@@ -47,7 +70,7 @@ def poll_job(s, redash_url, job):
     return None
 
 
-def get_fresh_query_result(redash_url, query_id, api_key, params):
+def get_fresh_query_result(redash_url, query_id, api_key, params={}):
     s = requests.Session()
     s.headers.update({'Authorization': 'Key {}'.format(api_key)})
 
@@ -72,20 +95,41 @@ def get_fresh_query_result(redash_url, query_id, api_key, params):
     return response.json()['query_result']['data']['rows']
 
 
+def get_file_name(file_path: str) -> str:
+    return os.path.basename(file_path).split('.')[0]
+
+
+def get_query(query_file_path: str) -> str:
+    with open(query_file_path, 'r', encoding='utf-8') as f:
+        query = f.read()
+    return query
+
+
 if __name__ == '__main__':
-    params = {'some_parameter': 1}
-    query_id = 26
+
+    load_dotenv(join(dirname(__file__), '.env'))
+
     redash_url = os.environ['REDASH_URL']
     api_key = os.environ['API_KEY']
+    data_source_id = 2
 
     client = Redash(redash_url, api_key)
-    queries = client.queries()
-    print(json.dumps(queries))
 
-    # data_source_id = 2
-    # name = 'query-test'
-    # query = 'select * from users where id = 7327;'
-    # result = create_query(api_key, redash_url, data_source_id, name, query)
-    # result = get_fresh_query_result(redash_url, result['id'], api_key, params)
+    query_path = os.path.dirname(__file__) + '/../queries/query_test.sql'
+    query_str = get_query(query_path)
+    print(query_str)
 
-    # print(json.dumps(result))
+    file_name = get_file_name(query_path)
+    print(file_name)
+
+    target_query = search_query(client, file_name)
+    if target_query is None:
+        created_query = create_query(api_key, redash_url, data_source_id,
+                                     file_name, query_str)
+        result = get_fresh_query_result(redash_url, created_query['id'],
+                                        api_key)
+    else:
+        result = get_fresh_query_result(redash_url, target_query['id'],
+                                        api_key)
+
+    print(json.dumps(result))
