@@ -5,6 +5,7 @@ import json
 from redash_toolbelt import Redash
 from dotenv import load_dotenv
 from os.path import join, dirname
+from tabulate import tabulate
 
 
 def create_query(api_key,
@@ -30,6 +31,27 @@ def create_query(api_key,
     }
 
     res = session.post('{}/api/queries'.format(redash_url),
+                       data=json.dumps(payload))
+
+    print(res.status_code)
+    return res.json()
+
+
+def update_query(api_key,
+                 redash_url: str,
+                 query_id: int,
+                 query: str,
+                 options: dict = None):
+
+    session = requests.Session()
+    session.headers.update({'Authorization': 'Key {}'.format(api_key)})
+
+    if options is None or not isinstance(options, dict):
+        options = {}
+
+    payload = {"query": query, "options": options}
+
+    res = session.post('{}/api/queries/{}'.format(redash_url, query_id),
                        data=json.dumps(payload))
 
     print(res.status_code)
@@ -129,7 +151,8 @@ if __name__ == '__main__':
         result = get_fresh_query_result(redash_url, created_query['id'],
                                         api_key)
     else:
+        updated_query = update_query(api_key, redash_url, target_query['id'],
+                                     query_str)
         result = get_fresh_query_result(redash_url, target_query['id'],
                                         api_key)
-
-    print(json.dumps(result))
+    print(tabulate(result, headers="keys", tablefmt="psql", stralign='center'))
