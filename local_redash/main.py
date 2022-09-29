@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 from tabulate import tabulate
 
+os.environ['NO_PROXY'] = '127.0.0.1,localhost'
+
 
 def create_query(api_key,
                  redash_url: str,
@@ -59,24 +61,19 @@ def update_query(api_key,
 
 
 def search_query(client, search_name):
-    result = None
-    page = 1
-    while True:
-        queries = client.queries(page=page)
-        count = queries['count']
-        page_size = queries['page_size']
-        page = queries['page']
 
-        for query in queries['results']:
-            if query['name'] == search_name:
-                result = query
-                break
-        if count < (page_size * page):
+    all_queries = client.paginate(client.queries)
+    result = None
+    for query in all_queries:
+        if query['name'] == search_name:
+            result = query
             break
 
-        page += 1
-
     return result
+
+
+def get_data_source_list(client):
+    return client.get_data_sources()
 
 
 def poll_job(s, redash_url, job):
@@ -133,9 +130,16 @@ if __name__ == '__main__':
 
     redash_url = os.environ['REDASH_URL']
     api_key = os.environ['API_KEY']
-    data_source_id = 2
+    data_source_id = 1
 
     client = Redash(redash_url, api_key)
+
+    data_source_list = get_data_source_list(client)
+    print(
+        tabulate(data_source_list,
+                 headers="keys",
+                 tablefmt="psql",
+                 stralign='center'))
 
     query_path = os.path.dirname(__file__) + '/../queries/query_test.sql'
     query_str = get_query(query_path)
