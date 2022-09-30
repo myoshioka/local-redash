@@ -6,6 +6,7 @@ from redash_toolbelt import Redash
 from dotenv import load_dotenv
 from os.path import join, dirname
 from tabulate import tabulate
+import click
 
 os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 
@@ -124,13 +125,15 @@ def get_query(query_file_path: str) -> str:
     return query
 
 
-if __name__ == '__main__':
+@click.command()
+@click.option('--query-file', required=True, type=str, help='')
+@click.option('--data-source-id', required=True, type=int, help='')
+def main(query_file: str, data_source_id: int):
 
     load_dotenv(join(dirname(__file__), '.env'))
 
     redash_url = os.environ['REDASH_URL']
     api_key = os.environ['API_KEY']
-    data_source_id = 1
 
     client = Redash(redash_url, api_key)
 
@@ -141,7 +144,8 @@ if __name__ == '__main__':
                  tablefmt="psql",
                  stralign='center'))
 
-    query_path = os.path.dirname(__file__) + '/../queries/query_test.sql'
+    # query_path = os.path.dirname(__file__) + '/../queries/query_test.sql'
+    query_path = query_file
     query_str = get_query(query_path)
     print(query_str)
 
@@ -160,3 +164,7 @@ if __name__ == '__main__':
         result = get_fresh_query_result(redash_url, target_query['id'],
                                         api_key)
     print(tabulate(result, headers="keys", tablefmt="psql", stralign='center'))
+
+
+if __name__ == '__main__':
+    main()
