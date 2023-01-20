@@ -7,5 +7,5 @@ class CommandExecuter:
         self._command = command
 
     def execute(self) -> None:
-        print("execute command")
+        print(f'execute command: {self._command.__class__.__name__}')
         self._command.execute()
