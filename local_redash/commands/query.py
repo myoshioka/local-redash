@@ -1,14 +1,14 @@
 import os
-from local_redash.commands.base import BaseCommand
+from local_redash.commands.base import Command
 from local_redash.lib.redash_client import RedashClient
 from tabulate import tabulate
 
 
-class QueryCommand(BaseCommand):
+class QueryCommand(Command):
 
-    def __init__(self, redash_client: RedashClient, query_path: str,
+    def __init__(self, client: RedashClient, query_path: str,
                  data_source_id: str) -> None:
-        self._redash_client = redash_client
+        self._redash_client = client
         self._query_path = query_path
         self._data_source_id = data_source_id
 
