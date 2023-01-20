@@ -2,30 +2,39 @@ import os
 from dotenv import load_dotenv
 from os.path import join, dirname
 import click
-from local_redash.commands.data_source_list import DataSourceListCommand
-from local_redash.commands.query import QueryCommand
-from local_redash.lib.redash_client import RedashClient
+from local_redash.containers import Container
+from local_redash.command_executer import CommandExecuter
+from dependency_injector.wiring import Provide, inject
 
 os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 
 
 @click.command()
-@click.option('--query-file', required=True, type=str, help='')
-@click.option('--data-source-id', required=True, type=int, help='')
-def main(query_file: str, data_source_id: int):
+@click.argument('command_name')
+@click.option('--query-file', type=str, help='')
+@click.option('--data-source-id', type=int, help='')
+@inject
+def main(command_name: str,
+         query_file: str,
+         data_source_id: int,
+         container: Container = Provide[Container]):
 
-    load_dotenv(join(dirname(__file__), '.env'))
+    container.config.command.type.from_value(command_name)
+    print(query_file)
+    print(data_source_id)
 
-    redash_url = os.environ['REDASH_URL']
-    api_key = os.environ['API_KEY']
-
-    client = RedashClient(redash_url, api_key)
-    data_source_list_command = DataSourceListCommand(client)
-    data_source_list_command.execute()
-
-    query_command = QueryCommand(client, query_file, data_source_id)
-    query_command.execute()
+    executer = container.executer()
+    executer.execute()
 
 
 if __name__ == '__main__':
+
+    load_dotenv(join(dirname(__file__), '.env'))
+
+    container = Container()
+    container.config.redash.url.from_env("REDASH_URL")
+    container.config.redash.api_key.from_env("API_KEY")
+    # container.config.command.type.from_value(command_name)
+    container.wire(modules=[__name__])
+
     main()
