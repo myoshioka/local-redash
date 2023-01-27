@@ -8,20 +8,36 @@ from dependency_injector.wiring import Provide, inject
 os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 
 
-@click.command()
-@click.argument('command_name')
+@click.group()
+@click.pass_context
+@inject
+def main(ctx, container: Container = Provide[Container]):
+    click.echo(f'call {ctx.invoked_subcommand}')
+
+    container.config.command.type.from_value(
+        ctx.invoked_subcommand.replace('-', '_'))
+    command_executer = container.executer()
+    ctx.obj = command_executer
+
+
+@main.command()
 @click.option('--query-file', type=str, help='')
 @click.option('--data-source-id', type=int, help='')
-@inject
-def main(command_name: str,
-         query_file: str,
-         data_source_id: int,
-         container: Container = Provide[Container]):
+@click.pass_context
+def query(ctx, query_file, data_source_id):
+    ctx.obj.execute(query_file, data_source_id)
 
-    container.config.command.type.from_value(command_name)
 
-    command_executer = container.executer()
-    command_executer.execute()
+@main.command()
+@click.pass_context
+def data_source_list(ctx):
+    ctx.obj.execute()
+
+
+@main.command()
+@click.pass_context
+def query_list(ctx):
+    ctx.obj.execute()
 
 
 if __name__ == '__main__':
