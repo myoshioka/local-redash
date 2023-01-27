@@ -1,26 +1,21 @@
 import os
 from local_redash.commands.base import Command
 from local_redash.lib.redash_client import RedashClient
-from tabulate import tabulate
 
 
 class QueryCommand(Command):
-
-    def __init__(self, client: RedashClient, query_path: str,
-                 data_source_id: str) -> None:
+    def __init__(self, client: RedashClient) -> None:
         self._redash_client = client
-        self._query_path = query_path
-        self._data_source_id = data_source_id
 
-    def execute(self) -> None:
-        query_str = self.__get_query(self._query_path)
-        query_name = self.__get_file_name(self._query_path)
+    def execute(self, query_path: str, data_source_id: str):
+        query_str = self.__get_query(query_path)
+        query_name = self.__get_file_name(query_path)
 
         target_query = self._redash_client.search_query(query_name)
 
         if target_query is None:
             created_query = self._redash_client.create_query(
-                self._data_source_id, query_name, query_str)
+                data_source_id, query_name, query_str)
             result = self._redash_client.get_fresh_query_result(
                 created_query['id'])
 
@@ -29,11 +24,7 @@ class QueryCommand(Command):
             result = self._redash_client.get_fresh_query_result(
                 target_query['id'])
 
-        print(
-            tabulate(result,
-                     headers="keys",
-                     tablefmt="psql",
-                     stralign='center'))
+        return result
 
     def __get_query(self, query_file_path: str) -> str:
         with open(query_file_path, 'r', encoding='utf-8') as f:
