@@ -1,8 +1,9 @@
 from dependency_injector import containers, providers
 from local_redash.lib.redash_client import RedashClient
+from local_redash.command_executer import CommandExecuter
 from local_redash.commands.data_source_list import DataSourceListCommand
 from local_redash.commands.query import QueryCommand
-from local_redash.command_executer import CommandExecuter
+from local_redash.commands.query_list import QueryListCommand
 
 
 class Container(containers.DeclarativeContainer):
@@ -22,17 +23,17 @@ class Container(containers.DeclarativeContainer):
     query_command = providers.Singleton(
         QueryCommand,
         client=redash_client,
-        # query_file=config.command.query.query_file,
-        # data_source_id=config.command.query.data_source_id,
-        query_path="./queries/query_test.sql",
-        data_source_id="1",
     )
 
-    command = providers.Selector(
-        config.command.type,
-        data_source_list=data_source_list_command,
-        query=query_command,
+    query_list_command = providers.Singleton(
+        QueryListCommand,
+        client=redash_client,
     )
+
+    command = providers.Selector(config.command.type,
+                                 data_source_list=data_source_list_command,
+                                 query=query_command,
+                                 query_list=query_list_command)
 
     executer = providers.Factory(
         CommandExecuter,
