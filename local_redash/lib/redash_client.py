@@ -5,7 +5,6 @@ import time
 
 
 class RedashClient:
-
     def __init__(self, redash_url: str, api_key: str) -> None:
         self._redash_url = redash_url
         self._api_key = api_key
@@ -51,6 +50,9 @@ class RedashClient:
 
     def get_data_source_list(self):
         return self._client.get_data_sources()
+
+    def get_query_list(self):
+        return self._client.paginate(self._client.queries)
 
     def get_fresh_query_result(self, query_id: str, params={}):
         session = requests.Session()
