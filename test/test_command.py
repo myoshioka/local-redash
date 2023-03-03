@@ -5,21 +5,29 @@ def test_data_source_list(test_container, monkeypatch, capsys):
     test_container.config.command.type.from_value('data_source_list')
 
     expected_format = "\n".join([
-        '+--------+--------+--------+',
-        '|   aaaa |   bbbb |   cccc |',
-        '|--------+--------+--------|',
-        '|   1111 |   2222 |   3333 |',
-        '|   4444 |   5555 |   6666 |',
-        '+--------+--------+--------+',
+        '+--------+----------------+----------+----------+-------------+--------+------+',
+        '|  name  |  pause_reason  |  syntax  |   paused |  view_only  |  type  |   id |',
+        '|--------+----------------+----------+----------+-------------+--------+------|',
+        '|  aaaa  |      bbbb      |   cccc   |        1 |    False    |  fuga  |    1 |',
+        '|  1111  |      2222      |   3333   |        1 |    True     |  hoge  |    2 |',
+        '+--------+----------------+----------+----------+-------------+--------+------+',
     ])
     mock_value = [{
-        'aaaa': '1111',
-        'bbbb': '2222',
-        'cccc': '3333'
+        'name': 'aaaa',
+        'pause_reason': 'bbbb',
+        'syntax': 'cccc',
+        'paused': '1',
+        'view_only': 'False',
+        'type': 'fuga',
+        'id': '1',
     }, {
-        'aaaa': '4444',
-        'bbbb': '5555',
-        'cccc': '6666'
+        'name': '1111',
+        'pause_reason': '2222',
+        'syntax': '3333',
+        'paused': '1',
+        'view_only': 'True',
+        'type': 'hoge',
+        'id': '2',
     }]
     redash_client_mock = mock.Mock()
     redash_client_mock.get_data_source_list.return_value = mock_value
