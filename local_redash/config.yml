@@ -1,0 +1,2 @@
+columns:
+  query_list: ['id','name','created_at','retrieved_at','data_source_id','runtime','query_hash']
