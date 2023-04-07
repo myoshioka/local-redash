@@ -1,0 +1,86 @@
+[
+  {
+    "is_archived": false,
+    "retrieved_at": "2023-04-07T06:31:06.983Z",
+    "updated_at": "2023-04-07T06:31:06.766Z",
+    "is_favorite": false,
+    "query": "-- select id,email,admin,first_name,last_name from users where id = 7327 or id = 7328;\nselect * from staff\n",
+    "id": 2,
+    "description": "",
+    "last_modified_by_id": 1,
+    "tags": [],
+    "version": 1,
+    "query_hash": "0a88c29528422eae8eaa427c1dadd36a",
+    "api_key": "nlACzoWXWekJWkzYcFHhxUItjYYofVJYAqCrAvM6",
+    "data_source_id": 1,
+    "is_safe": true,
+    "latest_query_data_id": 23,
+    "schedule": null,
+    "user": {
+      "auth_type": "password",
+      "is_disabled": false,
+      "updated_at": "2023-04-07T09:06:41.952Z",
+      "profile_image_url": "https://www.gravatar.com/avatar/960bacfefad636a6a7cc74148b687c3f?s=40&d=identicon",
+      "is_invitation_pending": false,
+      "groups": [
+        1,
+        2
+      ],
+      "id": 1,
+      "name": "makoto",
+      "created_at": "2022-09-16T10:04:20.268Z",
+      "disabled_at": null,
+      "is_email_verified": true,
+      "active_at": "2023-04-07T09:06:15Z",
+      "email": "y.mako2@gmail.com"
+    },
+    "is_draft": true,
+    "name": "query_test",
+    "created_at": "2022-09-29T08:48:25.160Z",
+    "runtime": 0.016346216201782227,
+    "options": {}
+  },
+  {
+    "is_archived": false,
+    "retrieved_at": "2022-09-16T10:12:21.974Z",
+    "updated_at": "2022-09-16T10:12:37.666Z",
+    "is_favorite": false,
+    "query": "select * from actor",
+    "id": 1,
+    "description": null,
+    "last_modified_by_id": 1,
+    "tags": [],
+    "version": 1,
+    "query_hash": "d012d72c9c722ecc9cab3dbcb8fb713e",
+    "api_key": "62PcbH7uMPsH6xetQXKHiK3XnnH9xDyASRHkxEBz",
+    "data_source_id": 1,
+    "is_safe": true,
+    "latest_query_data_id": 1,
+    "schedule": null,
+    "user": {
+      "auth_type": "password",
+      "is_disabled": false,
+      "updated_at": "2023-04-07T09:06:41.952Z",
+      "profile_image_url": "https://www.gravatar.com/avatar/960bacfefad636a6a7cc74148b687c3f?s=40&d=identicon",
+      "is_invitation_pending": false,
+      "groups": [
+        1,
+        2
+      ],
+      "id": 1,
+      "name": "makoto",
+      "created_at": "2022-09-16T10:04:20.268Z",
+      "disabled_at": null,
+      "is_email_verified": true,
+      "active_at": "2023-04-07T09:06:15Z",
+      "email": "y.mako2@gmail.com"
+    },
+    "is_draft": true,
+    "name": "test-01",
+    "created_at": "2022-09-16T10:12:37.666Z",
+    "runtime": 0.026887893676757812,
+    "options": {
+      "parameters": []
+    }
+  }
+]
