@@ -30,6 +30,9 @@ def test_data_source_list(test_container, mock_value_data_source_list,
 def test_query_list(test_container, mock_value_query_list, monkeypatch,
                     capsys):
     test_container.config.command.type.from_value('query_list')
+    test_container.config.columns.query_list.from_value([
+        'id', 'name', 'created_at', 'retrieved_at', 'data_source_id', 'runtime'
+    ])
 
     expected_format = "\n".join([
         '+--------------------------+------+------------------+------------+--------------------------+-----------+',
