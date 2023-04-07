@@ -1,3 +1,4 @@
+from os.path import join, dirname
 from dependency_injector import containers, providers
 from local_redash.lib.redash_client import RedashClient
 from local_redash.command_executer import CommandExecuter
@@ -9,6 +10,7 @@ from local_redash.commands.query_list import QueryListCommand
 class Container(containers.DeclarativeContainer):
 
     config = providers.Configuration()
+
     redash_client = providers.Factory(
         RedashClient,
         redash_url=config.redash.url,
@@ -25,10 +27,9 @@ class Container(containers.DeclarativeContainer):
         client=redash_client,
     )
 
-    query_list_command = providers.Singleton(
-        QueryListCommand,
-        client=redash_client,
-    )
+    query_list_command = providers.Singleton(QueryListCommand,
+                                             client=redash_client,
+                                             columns=config.columns.query_list)
 
     command = providers.Selector(config.command.type,
                                  data_source_list=data_source_list_command,

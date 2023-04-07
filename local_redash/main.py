@@ -47,6 +47,8 @@ if __name__ == '__main__':
     container = Container()
     container.config.redash.url.from_env("REDASH_URL")
     container.config.redash.api_key.from_env("API_KEY")
+    container.config.from_yaml(join(dirname(__file__), 'config.yml'))
+
     container.wire(modules=[__name__])
 
     main()
