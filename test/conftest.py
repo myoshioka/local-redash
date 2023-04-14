@@ -1,7 +1,14 @@
 import os
 import pytest
 import json
+from polyfactory.factories.pydantic_factory import ModelFactory
 from local_redash.containers import Container
+from redash_toolbelt import Redash
+from local_redash.models.redash_client import Query
+
+
+class QueryFactory(ModelFactory[Query]):
+    __model__ = Query
 
 
 @pytest.fixture
@@ -21,6 +28,11 @@ def mock_value_data_source_list():
 @pytest.fixture
 def mock_value_query_list():
     return get_test_data('query_list.json')
+
+
+@pytest.fixture
+def query_model():
+    return QueryFactory.build()
 
 
 def get_test_data(filename):
