@@ -1,5 +1,6 @@
 from os.path import join, dirname
 from dependency_injector import containers, providers
+from redash_toolbelt import Redash
 from local_redash.lib.redash_client import RedashClient
 from local_redash.command_executer import CommandExecuter
 from local_redash.commands.data_source_list import DataSourceListCommand
@@ -11,11 +12,13 @@ class Container(containers.DeclarativeContainer):
 
     config = providers.Configuration()
 
-    redash_client = providers.Factory(
-        RedashClient,
+    redash = providers.Factory(
+        Redash,
         redash_url=config.redash.url,
         api_key=config.redash.api_key,
     )
+
+    redash_client = providers.Factory(RedashClient, redash=redash)
 
     data_source_list_command = providers.Singleton(
         DataSourceListCommand,
