@@ -1,4 +1,5 @@
 import os
+
 from local_redash.commands.base import Command, ResultData
 from local_redash.lib.redash_client import RedashClient
 

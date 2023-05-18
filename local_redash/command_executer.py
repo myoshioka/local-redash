@@ -1,5 +1,6 @@
-from local_redash.commands.base import Command
 from tabulate import tabulate
+
+from local_redash.commands.base import Command
 
 
 class CommandExecuter:
