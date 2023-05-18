@@ -1,17 +1,21 @@
-from redash_toolbelt import Redash
-import requests
 import json
 import time
+
+import httpx
+import requests
 from local_redash.models.redash_client import Query
+from redash_toolbelt import Redash
 
 
 class RedashClient:
 
-    def __init__(self, redash: Redash) -> None:
+    def __init__(self, redash: Redash, redash_url: str, api_key: str) -> None:
         self._client = redash
+        self.redash_url = redash_url
+        self.request_headers = {"Authorization": f"Key {api_key}"}
 
     def search_query(self, search_name: str) -> Query | None:
-        all_queries = self._client.paginate(self._client.queries)
+        all_queries = self.get_query_list()
         result = None
         for query in all_queries:
             if query['name'] == search_name:
@@ -53,7 +57,7 @@ class RedashClient:
         return self._client.get_data_sources()
 
     def get_query_list(self):
-        return self._client.paginate(self._client.queries)
+        return self._get_paginate('api/queries')
 
     def query_result(self, query_id: str, params={}):
         session = self._client.session
@@ -90,3 +94,37 @@ class RedashClient:
             return job['query_result_id']
 
         return None
+
+    def _get_paginate(self, path: str, params=None):
+        response = self._get(path, params)
+        results = response['results']
+
+        page = response['page']
+        page_size = response['page_size']
+
+        if page * page_size >= response['count']:
+            return results
+        else:
+            return [
+                *results,
+                *self._get_paginate(path, {
+                    **params,
+                    **{
+                        'page': page + 1
+                    }
+                }),
+            ]
+
+    def _get(self, path: str, params=None):
+        response = httpx.get(f"{self.redash_url}/{path}",
+                             headers=self.request_headers,
+                             params=params)
+        if httpx.codes.is_success(response.status_code):
+            return response.json()
+
+    def _post(self, path: str, payload=None):
+        response = httpx.post(f"{self.redash_url}/{path}",
+                              headers=self.request_headers,
+                              json=payload)
+        if httpx.codes.is_success(response.status_code):
+            return response.json()
