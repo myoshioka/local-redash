@@ -40,3 +40,10 @@ class Query(BaseModel):
     updated_at: str
     version: int
     user: User
+
+
+class ResponseQuery(BaseModel):
+    count: int
+    page: int
+    page_size: int
+    results: list[Query]
