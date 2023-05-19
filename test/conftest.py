@@ -1,14 +1,22 @@
-import os
-import pytest
 import json
-from polyfactory.factories.pydantic_factory import ModelFactory
+import os
+
+import pytest
 from local_redash.containers import Container
+from local_redash.models.redash_client import Query, ResponseQuery
+from polyfactory import Use
+from polyfactory.factories.pydantic_factory import ModelFactory
 from redash_toolbelt import Redash
-from local_redash.models.redash_client import Query
 
 
 class QueryFactory(ModelFactory[Query]):
     __model__ = Query
+    options = {}
+
+
+class ResponseQueryFactory(ModelFactory[ResponseQuery]):
+    __model__ = ResponseQuery
+    results = Use(QueryFactory.batch, size=10)
 
 
 @pytest.fixture
@@ -33,6 +41,28 @@ def mock_value_query_list():
 @pytest.fixture
 def query_model():
     return QueryFactory.build()
+
+
+@pytest.fixture
+def response_query_models():
+
+    response_query_1 = ResponseQuery(
+        count=27,
+        page=1,
+        page_size=10,
+        results=[QueryFactory.build() for i in range(10)]).dict()
+    response_query_2 = ResponseQuery(
+        count=27,
+        page=2,
+        page_size=10,
+        results=[QueryFactory.build() for i in range(10)]).dict()
+    response_query_3 = ResponseQuery(
+        count=27,
+        page=3,
+        page_size=10,
+        results=[QueryFactory.build() for i in range(7)]).dict()
+
+    return [response_query_1, response_query_2, response_query_3]
 
 
 def get_test_data(filename):
