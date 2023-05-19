@@ -11,6 +11,9 @@ class RedashClient:
 
     def __init__(self, redash: Redash, redash_url: str, api_key: str) -> None:
         self._client = redash
+        if redash_url.endswith('/'):
+            redash_url = redash_url[:-1]
+
         self.redash_url = redash_url
         self.request_headers = {"Authorization": f"Key {api_key}"}
 
@@ -18,8 +21,8 @@ class RedashClient:
         all_queries = self.get_query_list()
         result = None
         for query in all_queries:
-            if query['name'] == search_name:
-                result = Query.parse_obj(query)
+            if query.name == search_name:
+                result = query
                 break
 
         return result
@@ -56,8 +59,13 @@ class RedashClient:
     def get_data_source_list(self):
         return self._client.get_data_sources()
 
-    def get_query_list(self):
-        return self._get_paginate('api/queries')
+    def get_query_list(self) -> list[Query]:
+        query_list = []
+        result = self._get_paginate('api/queries')
+        for item in result:
+            query_list.append(Query.parse_obj(item))
+
+        return query_list
 
     def query_result(self, query_id: str, params={}):
         session = self._client.session
@@ -95,7 +103,10 @@ class RedashClient:
 
         return None
 
-    def _get_paginate(self, path: str, params=None):
+    def _get_paginate(self, path: str, params={}):
+        if not 'page' in params:
+            params = {**params, **{'page': 1}}
+
         response = self._get(path, params)
         results = response['results']
 
@@ -121,6 +132,8 @@ class RedashClient:
                              params=params)
         if httpx.codes.is_success(response.status_code):
             return response.json()
+        else:
+            response.raise_for_status()
 
     def _post(self, path: str, payload=None):
         response = httpx.post(f"{self.redash_url}/{path}",
@@ -128,3 +141,5 @@ class RedashClient:
                               json=payload)
         if httpx.codes.is_success(response.status_code):
             return response.json()
+        else:
+            response.raise_for_status()
