@@ -39,6 +39,24 @@ def test_search_query_none(httpserver: HTTPServer, response_query_models):
     assert result is None
 
 
+def test_get_data_source_list(httpserver: HTTPServer,
+                              response_dataSource_models):
+    httpserver.expect_request('/api/data_sources').respond_with_json(
+        response_dataSource_models)
+
+    client = RedashClient(None, httpserver.url_for("/"), 'aaaaaaaa')
+    result = client.get_data_source_list()
+    assert len(list(result)) == len(response_dataSource_models)
+
+
+def test_get_data_source_list_empty(httpserver: HTTPServer):
+    httpserver.expect_request('/api/data_sources').respond_with_json([])
+
+    client = RedashClient(None, httpserver.url_for("/"), 'aaaaaaaa')
+    result = client.get_data_source_list()
+    assert len(list(result)) == 0
+
+
 def test_get(httpserver: HTTPServer):
     httpserver.expect_request('/foo',
                               headers={

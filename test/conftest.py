@@ -3,7 +3,7 @@ import os
 
 import pytest
 from local_redash.containers import Container
-from local_redash.models.redash_client import Query, ResponseQuery
+from local_redash.models.redash_client import DataSource, Query, ResponseQuery
 from polyfactory import Use
 from polyfactory.factories.pydantic_factory import ModelFactory
 from redash_toolbelt import Redash
@@ -17,6 +17,10 @@ class QueryFactory(ModelFactory[Query]):
 class ResponseQueryFactory(ModelFactory[ResponseQuery]):
     __model__ = ResponseQuery
     results = Use(QueryFactory.batch, size=10)
+
+
+class DataSourceFactory(ModelFactory[DataSource]):
+    __model__ = DataSource
 
 
 @pytest.fixture
@@ -63,6 +67,11 @@ def response_query_models():
         results=[QueryFactory.build() for i in range(7)]).dict()
 
     return [response_query_1, response_query_2, response_query_3]
+
+
+@pytest.fixture
+def response_dataSource_models():
+    return [DataSourceFactory.build().dict() for i in range(5)]
 
 
 def get_test_data(filename):
