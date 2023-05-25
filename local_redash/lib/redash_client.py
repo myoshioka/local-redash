@@ -3,7 +3,7 @@ import time
 
 import httpx
 import requests
-from local_redash.models.redash_client import Query
+from local_redash.models.redash_client import DataSourceList, Query, QueryList
 from redash_toolbelt import Redash
 
 
@@ -32,8 +32,10 @@ class RedashClient:
         if options is None or not isinstance(options, dict):
             options = {}
 
-        payload = {"query": query, "options": options}
-        result = self._client.update_query(query_id, payload)
+        payload = {'query': query, 'options': options}
+        result = self._post(f'api/queries/{query_id}', payload)
+
+        # result = self._client.update_query(query_id, payload)
         return result
 
     def create_query(self,
@@ -56,16 +58,14 @@ class RedashClient:
         result = self._client.create_query(payload)
         return result
 
-    def get_data_source_list(self):
-        return self._client.get_data_sources()
+    def get_data_source_list(self) -> DataSourceList:
+        response = self._get('api/data_sources')
+        return DataSourceList.parse_obj(response)
 
-    def get_query_list(self) -> list[Query]:
+    def get_query_list(self) -> QueryList:
         query_list = []
         result = self._get_paginate('api/queries')
-        for item in result:
-            query_list.append(Query.parse_obj(item))
-
-        return query_list
+        return QueryList.parse_obj(result)
 
     def query_result(self, query_id: str, params={}):
         session = self._client.session
