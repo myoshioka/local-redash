@@ -3,7 +3,9 @@ import os
 
 import pytest
 from local_redash.containers import Container
-from local_redash.models.redash_client import DataSource, Query, ResponseQuery
+from local_redash.models.redash_client import (DataSource, DataSourceList,
+                                               Query, QueryList, QueryUpdate,
+                                               ResponseQuery, Visualization)
 from polyfactory import Use
 from polyfactory.factories.pydantic_factory import ModelFactory
 from redash_toolbelt import Redash
@@ -12,6 +14,17 @@ from redash_toolbelt import Redash
 class QueryFactory(ModelFactory[Query]):
     __model__ = Query
     options = {}
+
+
+class VisualizationFactory(ModelFactory[Visualization]):
+    __model__ = Visualization
+    options = {}
+
+
+class QueryUpdateFactory(ModelFactory[QueryUpdate]):
+    __model__ = QueryUpdate
+    options = {}
+    visualizations = Use(VisualizationFactory.batch, size=1)
 
 
 class ResponseQueryFactory(ModelFactory[ResponseQuery]):
@@ -34,12 +47,12 @@ def test_container():
 
 @pytest.fixture
 def mock_value_data_source_list():
-    return get_test_data('data_source_list.json')
+    return DataSourceList.parse_obj(get_test_data('data_source_list.json'))
 
 
 @pytest.fixture
 def mock_value_query_list():
-    return get_test_data('query_list.json')
+    return QueryList.parse_obj(get_test_data('query_list.json'))
 
 
 @pytest.fixture
@@ -72,6 +85,11 @@ def response_query_models():
 @pytest.fixture
 def response_dataSource_models():
     return [DataSourceFactory.build().dict() for i in range(5)]
+
+
+@pytest.fixture
+def response_query_update_model():
+    return QueryUpdateFactory.build().dict()
 
 
 def get_test_data(filename):
