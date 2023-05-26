@@ -1,45 +1,47 @@
+from enum import IntEnum
+
 from pydantic import BaseModel, Field
 
 
 class User(BaseModel):
     id: int
-    active_at: str
+    name: str
     auth_type: str
-    created_at: str
-    disabled_at: str | None
     email: str
     groups: list[int]
     is_disabled: bool
     is_email_verified: bool
     is_invitation_pending: bool
-    name: str
     profile_image_url: str
+    created_at: str
+    active_at: str
     updated_at: str
+    disabled_at: str | None
 
 
 class Query(BaseModel):
     id: int
     name: str
+    description: str | None
     api_key: str
-    created_at: str
-    data_source_id: int
-    description: str
     is_archived: bool
     is_draft: bool
     is_favorite: bool
     is_safe: bool
+    data_source_id: int
     last_modified_by_id: int
-    latest_query_data_id: int
+    latest_query_data_id: int | None
     options: dict
     query: str
     query_hash: str
-    retrieved_at: str
-    runtime: float
+    runtime: float | None
     schedule: str | None
     tags: list[str]
-    updated_at: str
     version: int
     user: User
+    retrieved_at: str | None
+    updated_at: str
+    created_at: str
 
 
 class QueryList(BaseModel):
@@ -50,6 +52,9 @@ class QueryList(BaseModel):
 
     def __getitem__(self, item):
         return self.__root__[item]
+
+    def dict(self, **kwargs):
+        return super().dict(**kwargs)['__root__']
 
 
 class ResponseQuery(BaseModel):
@@ -62,7 +67,7 @@ class ResponseQuery(BaseModel):
 class DataSource(BaseModel):
     id: int
     name: str
-    pause_reason: str
+    pause_reason: str | None
     syntax: str
     paused: int
     view_only: bool
@@ -78,52 +83,105 @@ class DataSourceList(BaseModel):
     def __getitem__(self, item):
         return self.__root__[item]
 
+    def dict(self, **kwargs):
+        return super().dict(**kwargs)['__root__']
+
 
 class LastModified(BaseModel):
+    id: int
+    name: str
+    email: str
     auth_type: str
     is_disabled: bool
-    updated_at: str
     profile_image_url: str
     is_invitation_pending: bool
     groups: list[int]
-    id: int
-    name: str
-    created_at: str
-    disabled_at: str | None
     is_email_verified: bool
+    created_at: str
     active_at: str
-    email: str
+    updated_at: str
+    disabled_at: str | None
 
 
 class Visualization(BaseModel):
-    description: str
-    created_at: str
-    updated_at: str
     id: int
+    name: str
+    description: str
     type: str
     options: dict
-    name: str
+    created_at: str
+    updated_at: str
 
 
 class QueryUpdate(BaseModel):
     id: int
     name: str
     api_key: str
-    created_at: str
-    latest_query_data_id: int
     schedule: str | None
     description: str | None
     tags: list[str]
-    updated_at: str
     options: dict
     is_safe: bool
-    version: int
     is_favorite: bool
-    query_hash: str
     is_archived: bool
-    query: str
     is_draft: bool
+    version: int
+    query: str
+    query_hash: str
     data_source_id: int
+    latest_query_data_id: int | None
     user: User
     last_modified_by: LastModified
     visualizations: list[Visualization]
+    created_at: str
+    updated_at: str
+
+
+class QueryResulColumn(BaseModel):
+    friendly_name: str
+    type: str | None
+    name: str
+
+
+class QueryResulRows(BaseModel):
+    __root__: list[dict[str, str | int | float | bool | None]]
+
+    def __iter__(self):
+        return iter(self.__root__)
+
+    def __getitem__(self, item):
+        return self.__root__[item]
+
+    def dict(self, **kwargs):
+        return super().dict(**kwargs)['__root__']
+
+
+class QueryResultData(BaseModel):
+    # rows: list[dict[str, str | int | float | bool | None]]
+    rows: QueryResulRows
+    columns: list[QueryResulColumn]
+
+
+class QueryResult(BaseModel):
+    id: int
+    data_source_id: int
+    query_hash: str
+    query: str
+    runtime: float
+    data: QueryResultData
+    retrieved_at: str
+
+
+class JobResultStatus(IntEnum):
+    QUEUED = 1
+    STARTED = 2
+    FINISHED = 3
+    FAILED = 4
+
+
+class JobResult(BaseModel):
+    id: str
+    status: JobResultStatus
+    query_result_id: int | None
+    error: str
+    updated_at: int
