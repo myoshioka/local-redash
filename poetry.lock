@@ -1155,6 +1155,17 @@ files = [
 widechars = ["wcwidth"]
 
 [[package]]
+name = "timeout-decorator"
+version = "0.5.0"
+description = "Timeout decorator"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "timeout-decorator-0.5.0.tar.gz", hash = "sha256:6a2f2f58db1c5b24a2cc79de6345760377ad8bdc13813f5265f6c3e63d16b3d7"},
+]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -1267,4 +1278,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "959d5ce05fc0ac69d165a28cb2b72b789a504e2573f28150ff97ad6f3b07d007"
+content-hash = "d961b44cf55e9bcd8081d6d2b6290454e1f4a27d23f55d7a2b75e5c1542de812"
