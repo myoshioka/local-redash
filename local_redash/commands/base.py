@@ -1,5 +1,4 @@
-from typing import Union
-from typing import TypeAlias
+from typing import TypeAlias, Union
 
 ResultData: TypeAlias = list[dict[str, Union[str, int]]]
 
