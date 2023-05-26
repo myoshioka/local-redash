@@ -8,4 +8,5 @@ class DataSourceListCommand(Command):
         self._redash_client = client
 
     def execute(self) -> ResultData:
-        return self._redash_client.get_data_source_list()
+        data_source_list = self._redash_client.get_data_source_list()
+        return data_source_list.dict()

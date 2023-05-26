@@ -9,6 +9,6 @@ class QueryListCommand(Command):
         self._columns = columns
 
     def execute(self) -> ResultData:
-        result = self._redash_client.get_query_list()
+        query_list = self._redash_client.get_query_list()
         keys = set(self._columns)
-        return self.filter_columns(result, keys)
+        return self.filter_columns(query_list.dict(), keys)

@@ -18,13 +18,13 @@ class QueryCommand(Command):
         if target_query is None:
             created_query = self._redash_client.create_query(
                 data_source_id, query_name, query_str)
-            result = self._redash_client.query_result(created_query['id'])
+            result = self._redash_client.query_result(created_query.id)
 
         else:
             self._redash_client.update_query(target_query.id, query_str)
             result = self._redash_client.query_result(target_query.id)
 
-        return result
+        return result.rows.dict()
 
     def __get_query(self, query_file_path: str) -> str:
         with open(query_file_path, 'r', encoding='utf-8') as f:
