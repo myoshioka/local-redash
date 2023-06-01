@@ -1,13 +1,11 @@
-import json
 import time
 
 import httpx
-import requests
 from local_redash.models.redash_client import (DataSourceList, JobResult,
                                                JobResultStatus, Query,
                                                QueryList, QueryResultData,
                                                QueryUpdate)
-from timeout_decorator import TimeoutError, timeout
+from timeout_decorator import timeout
 
 QUERY_TIME_OUT = 10
 
@@ -34,7 +32,7 @@ class RedashClient:
     def update_query(self,
                      query_id: int,
                      query: str,
-                     options: dict = None) -> QueryUpdate:
+                     options: dict | None = None) -> QueryUpdate:
 
         if options is None or not isinstance(options, dict):
             options = {}
@@ -44,11 +42,11 @@ class RedashClient:
         return QueryUpdate.parse_obj(result)
 
     def create_query(self,
-                     data_source_id: int,
+                     data_source_id: str,
                      name: str,
                      query: str,
                      description: str = "",
-                     options: dict = None) -> QueryUpdate:
+                     options: dict | None = None) -> QueryUpdate:
 
         if options is None or not isinstance(options, dict):
             options = {}
@@ -68,31 +66,38 @@ class RedashClient:
         return DataSourceList.parse_obj(response)
 
     def get_query_list(self) -> QueryList:
-        query_list = []
         result = self._get_paginate('api/queries')
         return QueryList.parse_obj(result)
 
-    def query_result(self, query_id: str, params={}) -> QueryResultData:
+    def query_result(self, query_id: int, params={}) -> QueryResultData | None:
         payload = {'max_age': 0, 'parameters': params}
         results_response = self._post(f'api/queries/{query_id}/results',
                                       payload)
+        if results_response is None:
+            return None
+
         result_id = self._polling_job(results_response['job']['id'])
 
-        if result_id:
-            response = self._get(
-                f'api/queries/{query_id}/results/{result_id}.json')
-        else:
+        if result_id is None:
             raise Exception('Query execution timed out.')
+
+        response = self._get(
+            f'api/queries/{query_id}/results/{result_id}.json')
+
+        if response is None:
+            return None
 
         return QueryResultData.parse_obj(response['query_result']['data'])
 
     @timeout(QUERY_TIME_OUT)
-    def _polling_job(self, job_id: str) -> str | None:
+    def _polling_job(self, job_id: str) -> int | None:
         job_status: int | None = None
-        job_query_result_id: str | None = None
+        job_query_result_id: int | None = None
 
         while True:
             response = self._get(f'api/jobs/{job_id}')
+            if response is None:
+                return None
 
             job_result = JobResult.parse_obj(response['job'])
             job_status = job_result.status
@@ -111,6 +116,9 @@ class RedashClient:
             params = {**params, **{'page': 1}}
 
         response = self._get(path, params)
+        if response is None:
+            return None
+
         results = response['results']
 
         page = response['page']

@@ -1,5 +1,3 @@
-from os.path import dirname, join
-
 from dependency_injector import containers, providers
 
 from local_redash.command_executer import CommandExecuter

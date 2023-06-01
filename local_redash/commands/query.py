@@ -24,6 +24,9 @@ class QueryCommand(Command):
             self._redash_client.update_query(target_query.id, query_str)
             result = self._redash_client.query_result(target_query.id)
 
+        if result is None:
+            return []
+
         return result.rows.dict()
 
     def __get_query(self, query_file_path: str) -> str:
