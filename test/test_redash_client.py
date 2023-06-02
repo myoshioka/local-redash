@@ -2,7 +2,7 @@ import httpx
 import pytest
 from local_redash.lib.redash_client import RedashClient
 from local_redash.models.redash_client import (DataSourceList, Query,
-                                               QueryUpdate)
+                                               QueryResultData, QueryUpdate)
 from pytest_httpserver import HTTPServer
 
 
@@ -95,11 +95,46 @@ def test_create_query(httpserver: HTTPServer, response_query_update_model):
     assert type(result) is QueryUpdate
 
 
+def test_query_result(httpserver: HTTPServer,
+                      response_job_result_finished_model,
+                      response_query_result_model):
+    query_id = 1
+    payload = {'max_age': 0, 'parameters': {}}
+    job_id = response_job_result_finished_model['id']
+    query_result_id = response_job_result_finished_model['query_result_id']
+
+    httpserver.expect_request(f'/api/queries/{query_id}/results',
+                              json=payload,
+                              method='POST').respond_with_json(
+                                  {'job': response_job_result_finished_model})
+
+    httpserver.expect_request(f'/api/jobs/{job_id}').respond_with_json(
+        {'job': response_job_result_finished_model})
+
+    httpserver.expect_request(
+        f'/api/queries/{query_id}/results/{query_result_id}.json'
+    ).respond_with_json({'query_result': response_query_result_model})
+
+    client = RedashClient(httpserver.url_for('/'), 'aaaaaaaa')
+
+    result = client.query_result(query_id)
+
+    assert type(result) is QueryResultData
+    assert result.rows.dict() == response_query_result_model['data']['rows']
+
+
 # private method
 
 
-def test_polling_job(httpserver: HTTPServer):
-    pass
+def test_polling_job(httpserver: HTTPServer,
+                     response_job_result_finished_model):
+    httpserver.expect_request('/api/jobs/bbbbbbbbbb').respond_with_json(
+        {'job': response_job_result_finished_model})
+
+    client = RedashClient(httpserver.url_for("/"), 'aaaaaaaa')
+    result_id = client._polling_job('bbbbbbbbbb')
+
+    assert result_id == response_job_result_finished_model['query_result_id']
 
 
 def test_get(httpserver: HTTPServer):

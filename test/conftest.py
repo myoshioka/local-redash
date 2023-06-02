@@ -4,11 +4,23 @@ import os
 import pytest
 from local_redash.containers import Container
 from local_redash.models.redash_client import (DataSource, DataSourceList,
-                                               Query, QueryList, QueryUpdate,
+                                               JobResult, JobResultStatus,
+                                               Query, QueryList,
+                                               QueryResulColumn,
+                                               QueryResulRows, QueryResult,
+                                               QueryResultData, QueryUpdate,
                                                ResponseQuery, Visualization)
 from polyfactory import Use
 from polyfactory.factories.pydantic_factory import ModelFactory
-from redash_toolbelt import Redash
+
+
+def get_test_data(filename):
+    folder_path = os.path.abspath(os.path.dirname(__file__))
+    folder = os.path.join(folder_path, 'testdata')
+    jsonfile = os.path.join(folder, filename)
+    with open(jsonfile) as file:
+        data = json.load(file)
+    return data
 
 
 class QueryFactory(ModelFactory[Query]):
@@ -34,6 +46,30 @@ class ResponseQueryFactory(ModelFactory[ResponseQuery]):
 
 class DataSourceFactory(ModelFactory[DataSource]):
     __model__ = DataSource
+
+
+class JobResultFactory(ModelFactory[JobResult]):
+    __model__ = JobResult
+
+
+class QueryResulColumnFactory(ModelFactory[QueryResulColumn]):
+    __model__ = QueryResulColumn
+
+
+class QueryResulRowsFactory(ModelFactory[QueryResulRows]):
+    __model__ = QueryResulRows
+
+
+class QueryResultDataFactory(ModelFactory[QueryResultData]):
+    __model__ = QueryResultData
+    rows = QueryResulRows.parse_obj(get_test_data('query_result_rows.json'))
+    columns = Use(QueryResulColumnFactory.batch, size=5)
+
+
+class QueryResultFactory(ModelFactory[QueryResult]):
+    __model__ = QueryResult
+    # data = Use(QueryResultDataFactory.batch, size=1)
+    data = QueryResultDataFactory.build()
 
 
 @pytest.fixture
@@ -92,10 +128,12 @@ def response_query_update_model():
     return QueryUpdateFactory.build().dict()
 
 
-def get_test_data(filename):
-    folder_path = os.path.abspath(os.path.dirname(__file__))
-    folder = os.path.join(folder_path, 'testdata')
-    jsonfile = os.path.join(folder, filename)
-    with open(jsonfile) as file:
-        data = json.load(file)
-    return data
+@pytest.fixture
+def response_job_result_finished_model():
+    return JobResultFactory.build(status=JobResultStatus.FINISHED,
+                                  query_result_id=1).dict()
+
+
+@pytest.fixture
+def response_query_result_model():
+    return QueryResultFactory.build().dict()
