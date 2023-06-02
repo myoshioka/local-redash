@@ -6,7 +6,6 @@ authors = ["Makoto Yoshioka <y.mako2@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-redash-toolbelt = "^0.1.9"
 python-dotenv = "^0.21.0"
 tabulate = "^0.8.10"
 click = "^8.1.3"
