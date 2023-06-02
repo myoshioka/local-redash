@@ -1,0 +1,28 @@
+[
+    {
+        "username": "Mike",
+        "picture": "89504e470d0a5a0a",
+        "staff_id": 1,
+        "last_name": "Hillyer",
+        "store_id": 1,
+        "address_id": 3,
+        "last_update": "2022-05-16T15:13:11.793Z",
+        "first_name": "Mike",
+        "active": true,
+        "password": "8cb2237d0679ca88db6464eac60da96345513964",
+        "email": "Mike.Hillyer@sakilastaff.com"
+    },
+    {
+        "username": "Jon",
+        "picture": null,
+        "staff_id": 2,
+        "last_name": "Stephens",
+        "store_id": 2,
+        "address_id": 4,
+        "last_update": "2022-05-16T15:13:11.793Z",
+        "first_name": "Jon",
+        "active": true,
+        "password": "8cb2237d0679ca88db6464eac60da96345513964",
+        "email": "Jon.Stephens@sakilastaff.com"
+    }
+]

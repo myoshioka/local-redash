@@ -1,0 +1,62 @@
+{
+    "query_result": {
+        "retrieved_at": "2023-06-02T07:30:15.546Z",
+        "query_hash": "e5d5334c9565c15b888978c654042241",
+        "query": "select staff_id, username, first_name, last_name, store_id, address_id from staff\n",
+        "runtime": 0.008259057998657227,
+        "data": {
+            "rows": [
+                {
+                    "username": "Mike",
+                    "staff_id": 1,
+                    "last_name": "Hillyer",
+                    "store_id": 1,
+                    "address_id": 3,
+                    "first_name": "Mike"
+                },
+                {
+                    "username": "Jon",
+                    "staff_id": 2,
+                    "last_name": "Stephens",
+                    "store_id": 2,
+                    "address_id": 4,
+                    "first_name": "Jon"
+                }
+            ],
+            "columns": [
+                {
+                    "friendly_name": "staff_id",
+                    "type": "integer",
+                    "name": "staff_id"
+                },
+                {
+                    "friendly_name": "username",
+                    "type": null,
+                    "name": "username"
+                },
+                {
+                    "friendly_name": "first_name",
+                    "type": null,
+                    "name": "first_name"
+                },
+                {
+                    "friendly_name": "last_name",
+                    "type": null,
+                    "name": "last_name"
+                },
+                {
+                    "friendly_name": "store_id",
+                    "type": "integer",
+                    "name": "store_id"
+                },
+                {
+                    "friendly_name": "address_id",
+                    "type": "integer",
+                    "name": "address_id"
+                }
+            ]
+        },
+        "id": 53,
+        "data_source_id": 1
+    }
+}
