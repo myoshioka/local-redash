@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 import httpx
 from local_redash.models.redash_client import (DataSourceList, JobResult,
@@ -69,13 +70,10 @@ class RedashClient:
         result = self._get_paginate('api/queries')
         return QueryList.parse_obj(result)
 
-    def query_result(self, query_id: int, params={}) -> QueryResultData | None:
+    def query_result(self, query_id: int, params={}) -> QueryResultData:
         payload = {'max_age': 0, 'parameters': params}
         results_response = self._post(f'api/queries/{query_id}/results',
                                       payload)
-        if results_response is None:
-            return None
-
         result_id = self._polling_job(results_response['job']['id'])
 
         if result_id is None:
@@ -83,9 +81,6 @@ class RedashClient:
 
         response = self._get(
             f'api/queries/{query_id}/results/{result_id}.json')
-
-        if response is None:
-            return None
 
         return QueryResultData.parse_obj(response['query_result']['data'])
 
@@ -96,8 +91,6 @@ class RedashClient:
 
         while True:
             response = self._get(f'api/jobs/{job_id}')
-            if response is None:
-                return None
 
             job_result = JobResult.parse_obj(response['job'])
             job_status = job_result.status
@@ -111,16 +104,12 @@ class RedashClient:
 
         return job_query_result_id
 
-    def _get_paginate(self, path: str, params={}):
+    def _get_paginate(self, path: str, params={}) -> list:
         if not 'page' in params:
             params = {**params, **{'page': 1}}
 
         response = self._get(path, params)
-        if response is None:
-            return None
-
         results = response['results']
-
         page = response['page']
         page_size = response['page_size']
 
@@ -137,20 +126,16 @@ class RedashClient:
                 }),
             ]
 
-    def _get(self, path: str, params=None):
+    def _get(self, path: str, params=None) -> Any:
         response = httpx.get(f"{self.redash_url}/{path}",
                              headers=self.request_headers,
                              params=params)
-        if httpx.codes.is_success(response.status_code):
-            return response.json()
-        else:
-            response.raise_for_status()
+        response.raise_for_status()
+        return response.json()
 
-    def _post(self, path: str, payload=None):
+    def _post(self, path: str, payload=None) -> Any:
         response = httpx.post(f"{self.redash_url}/{path}",
                               headers=self.request_headers,
                               json=payload)
-        if httpx.codes.is_success(response.status_code):
-            return response.json()
-        else:
-            response.raise_for_status()
+        response.raise_for_status()
+        return response.json()
