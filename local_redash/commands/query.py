@@ -10,8 +10,8 @@ class QueryCommand(Command):
         self._redash_client = client
 
     def execute(self, query_path: str, data_source_id: str) -> ResultData:
-        query_str = self.__get_query(query_path)
-        query_name = self.__get_file_name(query_path)
+        query_str = self._get_query(query_path)
+        query_name = self._get_file_name(query_path)
 
         target_query = self._redash_client.search_query(query_name)
 
@@ -29,10 +29,10 @@ class QueryCommand(Command):
 
         return result.rows.dict()
 
-    def __get_query(self, query_file_path: str) -> str:
+    def _get_query(self, query_file_path: str) -> str:
         with open(query_file_path, 'r', encoding='utf-8') as f:
             query = f.read()
         return query
 
-    def __get_file_name(self, file_path: str) -> str:
+    def _get_file_name(self, file_path: str) -> str:
         return os.path.basename(file_path).split('.')[0]
