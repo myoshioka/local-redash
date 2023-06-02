@@ -79,18 +79,18 @@ def test_update_query(httpserver: HTTPServer, response_query_update_model):
 def test_create_query(httpserver: HTTPServer, response_query_update_model):
     query_str = 'select * from aaaaa'
     payload = {
-        "data_source_id": 1,
-        "name": 'test',
-        "query": query_str,
-        "description": 'test query',
-        "options": {}
+        'data_source_id': '1',
+        'name': 'test',
+        'query': query_str,
+        'description': 'test query',
+        'options': {}
     }
     httpserver.expect_request(
         '/api/queries',
         json=payload).respond_with_json(response_query_update_model)
 
     client = RedashClient(httpserver.url_for("/"), 'aaaaaaaa')
-    result = client.create_query(1, 'test', query_str, 'test query')
+    result = client.create_query('1', 'test', query_str, 'test query')
 
     assert type(result) is QueryUpdate
 
@@ -164,7 +164,7 @@ def test_get_error(httpserver: HTTPServer):
     httpserver.expect_request('/foo').respond_with_json({'error': '400'},
                                                         status=400)
     client = RedashClient(httpserver.url_for('/'), 'aaaaaaaa')
-    with pytest.raises(httpx.HTTPStatusError, match='400 BAD REQUEST') as e:
+    with pytest.raises(httpx.HTTPStatusError, match='400 BAD REQUEST'):
         client._get('foo')
 
 
