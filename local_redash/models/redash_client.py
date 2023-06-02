@@ -157,7 +157,6 @@ class QueryResulRows(BaseModel):
 
 
 class QueryResultData(BaseModel):
-    # rows: list[dict[str, str | int | float | bool | None]]
     rows: QueryResulRows
     columns: list[QueryResulColumn]
 
@@ -185,3 +184,6 @@ class JobResult(BaseModel):
     query_result_id: int | None
     error: str
     updated_at: int
+
+    class Config:
+        use_enum_values = True
