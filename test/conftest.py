@@ -92,6 +92,17 @@ def mock_value_query_list():
 
 
 @pytest.fixture
+def mock_value_query_result_data():
+    return QueryResultData.parse_obj(
+        get_test_data('query_result.json')['query_result']['data'])
+
+
+@pytest.fixture
+def mock_value_query_update():
+    return QueryUpdateFactory.build()
+
+
+@pytest.fixture
 def query_model():
     return QueryFactory.build()
 
