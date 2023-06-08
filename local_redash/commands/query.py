@@ -2,6 +2,7 @@ import os
 
 from local_redash.commands.base import Command, ResultData
 from local_redash.lib.redash_client import RedashClient
+from local_redash.models.redash_client import QueryResulRows, QueryResultData
 
 
 class QueryCommand(Command):
@@ -27,7 +28,22 @@ class QueryCommand(Command):
         if result is None:
             return []
 
-        return result.rows.dict()
+        return self._sort_columns(result).rows.dict()
+
+    def _sort_columns(self, query_result_data: QueryResultData):
+        columns = [
+            resul_column.friendly_name
+            for resul_column in query_result_data.columns
+        ]
+
+        sorted_result_data_dict_list = [{
+            key: row[key]
+            for key in columns
+        } for row in query_result_data.rows.dict()]
+
+        return QueryResultData(
+            rows=QueryResulRows.parse_obj(sorted_result_data_dict_list),
+            columns=query_result_data.columns)
 
     def _get_query(self, query_file_path: str) -> str:
         with open(query_file_path, 'r', encoding='utf-8') as f:
