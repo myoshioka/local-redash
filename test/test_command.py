@@ -1,6 +1,9 @@
 from unittest import mock
 from unittest.mock import MagicMock
 
+from local_redash.commands.query import QueryCommand
+from local_redash.lib.redash_client import RedashClient
+
 
 def test_data_source_list(test_container, mock_value_data_source_list, capsys):
     test_container.config.command.type.from_value('data_source_list')
@@ -60,12 +63,12 @@ def test_query(test_container, mock_value_query_result_data,
     test_container.config.command.type.from_value('query')
 
     expected_format = "\n".join([
-        '+------------+------------+-------------+------------+--------------+--------------+',
-        '|  username  |   staff_id |  last_name  |   store_id |   address_id |  first_name  |',
-        '|------------+------------+-------------+------------+--------------+--------------|',
-        '|    Mike    |          1 |   Hillyer   |          1 |            3 |     Mike     |',
-        '|    Jon     |          2 |  Stephens   |          2 |            4 |     Jon      |',
-        '+------------+------------+-------------+------------+--------------+--------------+',
+        '+------------+------------+--------------+-------------+------------+--------------+',
+        '|   staff_id |  username  |  first_name  |  last_name  |   store_id |   address_id |',
+        '|------------+------------+--------------+-------------+------------+--------------|',
+        '|          1 |    Mike    |     Mike     |   Hillyer   |          1 |            3 |',
+        '|          2 |    Jon     |     Jon      |  Stephens   |          2 |            4 |',
+        '+------------+------------+--------------+-------------+------------+--------------+',
     ])
 
     redash_client_mock = mock.Mock()
@@ -89,3 +92,15 @@ def test_query(test_container, mock_value_query_result_data,
     print(expected_format)
 
     assert captured.out.splitlines() == expected_format.splitlines()
+
+
+def test_query_sort_columns(mock_value_query_result_data):
+    client = RedashClient('http://dummy', 'aaaaaaaa')
+    query_command = QueryCommand(client)
+    result_data = query_command._sort_columns(mock_value_query_result_data)
+
+    sorted_columns = [column.friendly_name for column in result_data.columns]
+    keys_list = [list(row.keys()) for row in result_data.rows.dict()]
+
+    for keys in keys_list:
+        assert keys == sorted_columns
