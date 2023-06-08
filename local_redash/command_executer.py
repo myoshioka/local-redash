@@ -8,10 +8,16 @@ class CommandExecuter:
     def __init__(self, command: Command):
         self._command = command
 
-    def execute(self, *args) -> None:
+    def execute(
+        self,
+        *args,
+        headers: str = 'keys',
+        tablefmt: str = 'psql',
+        stralign: str = 'center',
+    ) -> None:
         result = self._command.execute(*args)
         print(
             tabulate(result,
-                     headers="keys",
-                     tablefmt="psql",
-                     stralign='center'))
+                     headers=headers,
+                     tablefmt=tablefmt,
+                     stralign=stralign))
