@@ -1,9 +1,11 @@
 import os
-from dotenv import load_dotenv
-from os.path import join, dirname
+from os.path import dirname, join
+
 import click
-from local_redash.containers import Container
 from dependency_injector.wiring import Provide, inject
+from dotenv import load_dotenv
+
+from local_redash.containers import Container
 
 os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 
@@ -38,6 +40,14 @@ def data_source_list(ctx):
 @click.pass_context
 def query_list(ctx):
     ctx.obj.execute()
+
+
+@main.command()
+@click.option('--query-name', type=str, help='')
+@click.option('--file-path', type=str, help='')
+@click.pass_context
+def query_export(ctx, query_name, file_path):
+    ctx.obj.execute(query_name, file_path, stralign='left')
 
 
 if __name__ == '__main__':
