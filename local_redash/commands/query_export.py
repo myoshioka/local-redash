@@ -23,10 +23,10 @@ class QueryExportCommand(Command):
 
         return [{'query': self.format(target_query.query)}]
 
-    def format(self, query_str: str) -> str:
+    def format(self, query_str: str, dialect: str = 'postgres') -> str:
         return sqlfluff.fix(
             query_str,
-            dialect='postgres',
+            dialect=dialect,
         )
 
     def _save_query(self, query_str: str, file_path: str) -> bool:
