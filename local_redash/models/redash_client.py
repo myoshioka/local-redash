@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 
 from pydantic import BaseModel, Field
 
@@ -64,6 +64,14 @@ class ResponseQuery(BaseModel):
     results: list[Query]
 
 
+class DataSourceType(Enum):
+    POSTGRESQL = 'pg'
+    MYSQL = 'mysql'
+    BIGQUERY = 'bigquery'
+    PYTHON = 'python'
+    ATHENA = 'athena'
+
+
 class DataSource(BaseModel):
     id: int
     name: str
@@ -71,7 +79,26 @@ class DataSource(BaseModel):
     syntax: str
     paused: int
     view_only: bool
-    type: str
+    type: DataSourceType
+
+    class Config:
+        use_enum_values = True
+
+
+class DataSourceDetail(BaseModel):
+    id: int
+    name: str
+    scheduled_queue_name: str
+    pause_reason: str | None
+    queue_name: str
+    syntax: str
+    paused: int
+    type: DataSourceType
+    groups: dict[str, str | int | bool]
+    options: dict[str, str | int | bool]
+
+    class Config:
+        use_enum_values = True
 
 
 class DataSourceList(BaseModel):
@@ -187,3 +214,21 @@ class JobResult(BaseModel):
 
     class Config:
         use_enum_values = True
+
+
+class SqlFormatDialects():
+
+    DATASOURCE_DIALECTS_MMAPPING = {
+        DataSourceType.ATHENA: 'athena',
+        DataSourceType.BIGQUERY: 'bigquery',
+        DataSourceType.MYSQL: 'mysql',
+        DataSourceType.POSTGRESQL: 'postgres'
+    }
+
+    @classmethod
+    def from_datasource_type(cls, source_type: DataSourceType) -> str:
+
+        if source_type in cls.DATASOURCE_DIALECTS_MMAPPING:
+            return cls.DATASOURCE_DIALECTS_MMAPPING[source_type]
+        else:
+            return 'ansi'
