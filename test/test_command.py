@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, mock_open, patch
 
 from local_redash.commands.query import QueryCommand
 from local_redash.lib.redash_client import RedashClient
@@ -104,3 +104,45 @@ def test_query_sort_columns(mock_value_query_result_data):
 
     for keys in keys_list:
         assert keys == sorted_columns
+
+
+# @patch("builtins.open", new_callable=mock_open)
+def test_query_export(test_container, mock_value_query,
+                      mock_value_data_source_detail, capsys):
+    test_container.config.command.type.from_value('query_export')
+
+    expected_format = "\n".join([
+        '+------------------------------+',
+        '| exported-query               |',
+        '|------------------------------|',
+        '| select                       |',
+        '|     id,                      |',
+        '|     email,                   |',
+        '|     admin,                   |',
+        '|     first_name,              |',
+        '|     last_name                |',
+        '| from users                   |',
+        '| where id = 7327 or id = 7328 |',
+        '+------------------------------+',
+    ])
+    redash_client_mock = mock.Mock()
+    redash_client_mock.search_query.return_value = mock_value_query
+    redash_client_mock.get_data_source.return_value = mock_value_data_source_detail
+    save_query_mock = MagicMock(return_value=True)
+
+    with test_container.redash_client.override(redash_client_mock):
+        command = test_container.command()
+        command._save_query = save_query_mock
+
+        executer = test_container.executer()
+        executer.execute('query_test', './', stralign='left')
+
+    save_query_mock.assert_called_once_with(
+        'select\n    id,\n    email,\n    admin,\n    first_name,\n    last_name\nfrom users\nwhere id = 7327 or id = 7328\n',
+        './query_test.sql')
+
+    captured = capsys.readouterr()
+    print('\n')
+    print(captured.out)
+    print(expected_format)
+    assert captured.out.splitlines() == expected_format.splitlines()
