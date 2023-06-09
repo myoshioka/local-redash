@@ -26,7 +26,7 @@ class QueryExportCommand(Command):
         if not result:
             return []
 
-        return [{'query': formatted_query}]
+        return [{'exported-query': formatted_query}]
 
     def format(self, query_str: str, data_source_type: DataSourceType) -> str:
         dialect = SqlFormatDialects.from_datasource_type(data_source_type)
