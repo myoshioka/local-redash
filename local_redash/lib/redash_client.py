@@ -2,7 +2,8 @@ import time
 from typing import Any
 
 import httpx
-from local_redash.models.redash_client import (DataSourceList, JobResult,
+from local_redash.models.redash_client import (DataSourceDetail,
+                                               DataSourceList, JobResult,
                                                JobResultStatus, Query,
                                                QueryList, QueryResultData,
                                                QueryUpdate)
@@ -61,6 +62,10 @@ class RedashClient:
         }
         result = self._post('api/queries', payload)
         return QueryUpdate.parse_obj(result)
+
+    def get_data_source(self, id: int) -> DataSourceDetail:
+        response = self._get(f'api/data_sources/{id}')
+        return DataSourceDetail.parse_obj(response)
 
     def get_data_source_list(self) -> DataSourceList:
         response = self._get('api/data_sources')
