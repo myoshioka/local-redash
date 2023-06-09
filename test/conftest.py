@@ -3,10 +3,10 @@ import os
 
 import pytest
 from local_redash.containers import Container
-from local_redash.models.redash_client import (DataSource, DataSourceList,
-                                               JobResult, JobResultStatus,
-                                               Query, QueryList,
-                                               QueryResulColumn,
+from local_redash.models.redash_client import (DataSource, DataSourceDetail,
+                                               DataSourceList, JobResult,
+                                               JobResultStatus, Query,
+                                               QueryList, QueryResulColumn,
                                                QueryResulRows, QueryResult,
                                                QueryResultData, QueryUpdate,
                                                ResponseQuery, Visualization)
@@ -72,6 +72,9 @@ class QueryResultFactory(ModelFactory[QueryResult]):
     data = QueryResultDataFactory.build()
 
 
+# fixture
+
+
 @pytest.fixture
 def test_container():
     return Container(
@@ -87,8 +90,18 @@ def mock_value_data_source_list():
 
 
 @pytest.fixture
+def mock_value_data_source_detail():
+    return DataSourceDetail.parse_obj(get_test_data('data_source_detail.json'))
+
+
+@pytest.fixture
 def mock_value_query_list():
     return QueryList.parse_obj(get_test_data('query_list.json'))
+
+
+@pytest.fixture
+def mock_value_query():
+    return Query.parse_obj(get_test_data('query_list.json')[0])
 
 
 @pytest.fixture
