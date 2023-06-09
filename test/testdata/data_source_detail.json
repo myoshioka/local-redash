@@ -1,0 +1,20 @@
+{
+    "scheduled_queue_name": "scheduled_queries",
+    "name": "test",
+    "pause_reason": null,
+    "queue_name": "queries",
+    "syntax": "sql",
+    "paused": 0,
+    "options": {
+        "port": 5432,
+        "host": "postgres",
+        "password": "--------",
+        "user": "test",
+        "dbname": "test"
+    },
+    "groups": {
+        "2": false
+    },
+    "type": "pg",
+    "id": 1
+}
