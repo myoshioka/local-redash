@@ -97,9 +97,6 @@ class DataSourceDetail(BaseModel):
     groups: dict[str, str | int | bool]
     options: dict[str, str | int | bool]
 
-    class Config:
-        use_enum_values = True
-
 
 class DataSourceList(BaseModel):
     __root__: list[DataSource]
