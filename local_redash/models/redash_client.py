@@ -19,6 +19,13 @@ class User(BaseModel):
     disabled_at: str | None
 
 
+class QuerySchedule(BaseModel):
+    interval: int | None
+    until: str | None
+    day_of_week: str | None
+    time: str | None
+
+
 class Query(BaseModel):
     id: int
     name: str
@@ -35,7 +42,7 @@ class Query(BaseModel):
     query: str
     query_hash: str
     runtime: float | None
-    schedule: str | None
+    schedule: QuerySchedule | None
     tags: list[str]
     version: int
     user: User
