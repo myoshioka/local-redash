@@ -1,3 +1,5 @@
+import os
+
 import sqlfluff
 from local_redash.commands.base import Command, ResultData
 from local_redash.lib.redash_client import RedashClient
@@ -10,7 +12,9 @@ class QueryExportCommand(Command):
         self._redash_client = client
 
     def execute(self, query_name: str, file_path: str) -> ResultData:
-        print(file_path)
+        if not os.path.isdir(file_path):
+            return []
+        file_path = file_path.rstrip(os.path.sep)
 
         target_query = self._redash_client.search_query(query_name)
 
@@ -21,7 +25,8 @@ class QueryExportCommand(Command):
             target_query.data_source_id)
 
         formatted_query = self.format(target_query.query, data_source.type)
-        result = self._save_query(formatted_query, file_path)
+        result = self._save_query(formatted_query,
+                                  f'{file_path}/{query_name}.sql')
 
         if not result:
             return []
