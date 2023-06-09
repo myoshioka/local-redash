@@ -4,7 +4,7 @@
     "retrieved_at": "2023-04-07T06:31:06.983Z",
     "updated_at": "2023-04-07T06:31:06.766Z",
     "is_favorite": false,
-    "query": "-- select id,email,admin,first_name,last_name from users where id = 7327 or id = 7328;\nselect * from staff\n",
+    "query": "select id,email,admin,first_name,last_name from users where id = 7327 or id = 7328",
     "id": 2,
     "description": "",
     "last_modified_by_id": 1,
