@@ -12,8 +12,8 @@ def test_data_source_list(test_container, mock_value_data_source_list, capsys):
         '+------+--------+----------------+----------+----------+-------------+--------+',
         '|   id |  name  |  pause_reason  |  syntax  |   paused |  view_only  |  type  |',
         '|------+--------+----------------+----------+----------+-------------+--------|',
-        '|    1 |  aaaa  |      bbbb      |   cccc   |        1 |    False    |  fuga  |',
-        '|    2 |  1111  |      2222      |   3333   |        1 |    True     |  hoge  |',
+        '|    1 |  aaaa  |      bbbb      |   cccc   |        1 |    False    | mysql  |',
+        '|    2 |  1111  |      2222      |   3333   |        1 |    True     |   pg   |',
         '+------+--------+----------------+----------+----------+-------------+--------+',
     ])
     redash_client_mock = mock.Mock()

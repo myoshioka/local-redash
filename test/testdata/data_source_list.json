@@ -5,7 +5,7 @@
         "syntax": "cccc",
         "paused": "1",
         "view_only": "False",
-        "type": "fuga",
+        "type": "mysql",
         "id": "1"
     },
     {
@@ -14,7 +14,7 @@
         "syntax": "3333",
         "paused": "1",
         "view_only": "True",
-        "type": "hoge",
+        "type": "pg",
         "id": "2"
     }
 ]
