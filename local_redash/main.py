@@ -53,11 +53,18 @@ def query_list(ctx, sort_column):
 
 
 @main.command()
-@click.option('--query-name', type=str, help='')
-@click.option('--file-path', type=str, help='')
+@click.option('--query-name', required=True, type=str, help='')
+@click.option('--file-path', required=True, type=str, help='')
 @click.pass_context
 def export_query(ctx, query_name, file_path):
     ctx.obj.execute(query_name, file_path, stralign='left')
+
+
+@main.command()
+@click.option('--query-id', required=True, type=int, help='')
+@click.pass_context
+def show_query(ctx, query_id):
+    ctx.obj.execute(query_id)
 
 
 if __name__ == '__main__':
