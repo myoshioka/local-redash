@@ -23,30 +23,40 @@ def main(ctx, container: Container = Provide[Container]):
 
 
 @main.command()
-@click.option('--query-file', type=str, help='')
-@click.option('--data-source-id', type=int, help='')
+@click.option('--query-file', required=True, type=str, help='')
+@click.option('--data-source-id', required=True, type=int, help='')
 @click.pass_context
 def query(ctx, query_file, data_source_id):
     ctx.obj.execute(query_file, data_source_id)
 
 
 @main.command()
+@click.option('--sort-column',
+              type=str,
+              default='id',
+              show_default=True,
+              help='')
 @click.pass_context
-def data_source_list(ctx):
-    ctx.obj.execute()
+def data_source_list(ctx, sort_column):
+    ctx.obj.execute(sort_column)
 
 
 @main.command()
+@click.option('--sort-column',
+              type=str,
+              default='id',
+              show_default=True,
+              help='')
 @click.pass_context
-def query_list(ctx):
-    ctx.obj.execute()
+def query_list(ctx, sort_column):
+    ctx.obj.execute(sort_column)
 
 
 @main.command()
 @click.option('--query-name', type=str, help='')
 @click.option('--file-path', type=str, help='')
 @click.pass_context
-def query_export(ctx, query_name, file_path):
+def export_query(ctx, query_name, file_path):
     ctx.obj.execute(query_name, file_path, stralign='left')
 
 
@@ -55,8 +65,10 @@ if __name__ == '__main__':
     load_dotenv(join(dirname(__file__), '.env'))
 
     container = Container()
+    # redash-api
     container.config.redash.url.from_env("REDASH_URL")
     container.config.redash.api_key.from_env("API_KEY")
+    # config
     container.config.from_yaml(join(dirname(__file__), 'config.yml'))
 
     container.wire(modules=[__name__])

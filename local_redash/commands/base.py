@@ -17,3 +17,7 @@ class Command:
         check: Callable[[tuple[str, str | int]],
                         bool] = lambda item: item[0] in columns
         return list(map(lambda x: dict(filter(check, x.items())), result_data))
+
+    def sort_records(self, result_data: ResultData,
+                     column_name: str) -> ResultData:
+        return sorted(result_data, key=lambda record: record[column_name])

@@ -8,7 +8,12 @@ class QueryListCommand(Command):
         self._redash_client = client
         self._columns = columns
 
-    def execute(self) -> ResultData:
+    def execute(self, sort_column: str | None = None) -> ResultData:
         query_list = self._redash_client.get_query_list()
         keys = set(self._columns)
-        return self.filter_columns(query_list.dict(), keys)
+        filtered_query_list = self.filter_columns(query_list.dict(), keys)
+
+        if sort_column is None:
+            return filtered_query_list
+
+        return self.sort_records(filtered_query_list, sort_column)
