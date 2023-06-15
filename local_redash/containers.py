@@ -56,4 +56,6 @@ class Container(containers.DeclarativeContainer):
     executer = providers.Factory(
         CommandExecuter,
         command=command,
+        tablefmt=config.table_format.tablefmt,
+        stralign=config.table_format.stralign,
     )
