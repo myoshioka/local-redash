@@ -13,7 +13,7 @@ class CommandExecuter:
         *args,
         headers: str = 'keys',
         tablefmt: str = 'psql',
-        stralign: str = 'center',
+        stralign: str = 'left',
     ) -> None:
         result = self._command.execute(*args)
         print(
