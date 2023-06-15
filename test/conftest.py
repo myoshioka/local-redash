@@ -79,10 +79,16 @@ class QueryResultFactory(ModelFactory[QueryResult]):
 @pytest.fixture
 def test_container():
     return Container(
-        config={'redash': {
-            'url': 'http://dummy',
-            'api_key': 'dummy_key'
-        }})
+        config={
+            'redash': {
+                'url': 'http://dummy',
+                'api_key': 'dummy_key'
+            },
+            'table_format': {
+                'tablefmt': 'psql',
+                'stralign': 'left'
+            }
+        })
 
 
 @pytest.fixture
