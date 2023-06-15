@@ -1,9 +1,7 @@
 import os
 
-import sqlfluff
 from local_redash.commands.base import Command, ResultData
 from local_redash.lib.redash_client import RedashClient
-from local_redash.models.redash_client import DataSourceType, SqlFormatDialects
 
 
 class ExportQueryCommand(Command):
@@ -24,7 +22,7 @@ class ExportQueryCommand(Command):
         data_source = self._redash_client.get_data_source(
             target_query.data_source_id)
 
-        formatted_query = self.format(target_query.query, data_source.type)
+        formatted_query = self.format_sql(target_query.query, data_source.type)
         result = self._save_query(formatted_query,
                                   f'{file_path}/{query_name}.sql')
 
@@ -32,14 +30,6 @@ class ExportQueryCommand(Command):
             return []
 
         return [{'exported-query': formatted_query}]
-
-    def format(self, query_str: str, data_source_type: DataSourceType) -> str:
-        dialect = SqlFormatDialects.from_datasource_type(data_source_type)
-
-        return sqlfluff.fix(
-            query_str,
-            dialect=dialect,
-        )
 
     def _save_query(self, query_str: str, file_path: str) -> bool:
         try:
