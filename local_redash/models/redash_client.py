@@ -101,7 +101,7 @@ class QueryDetail(BaseModel):
     id: int
     name: str
     api_key: str
-    schedule: str | None
+    schedule: QuerySchedule | None
     description: str | None
     tags: list[str]
     options: dict
