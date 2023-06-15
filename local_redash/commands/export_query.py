@@ -22,7 +22,8 @@ class ExportQueryCommand(Command):
         data_source = self._redash_client.get_data_source(
             target_query.data_source_id)
 
-        formatted_query = self.format_sql(target_query.query, data_source.type)
+        formatted_query = self.format_query(target_query.query,
+                                            data_source.type)
         result = self._save_query(formatted_query,
                                   f'{file_path}/{query_name}.sql')
 
