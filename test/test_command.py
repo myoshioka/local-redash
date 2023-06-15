@@ -21,7 +21,7 @@ def test_data_source_list(test_container, mock_value_data_source_list, capsys):
 
     with test_container.redash_client.override(redash_client_mock):
         executer = test_container.executer()
-        executer.execute()
+        executer.execute(stralign='center')
 
     captured = capsys.readouterr()
     print('\n')
@@ -49,7 +49,7 @@ def test_query_list(test_container, mock_value_query_list, capsys):
 
     with test_container.redash_client.override(redash_client_mock):
         executer = test_container.executer()
-        executer.execute()
+        executer.execute(stralign='center')
 
     captured = capsys.readouterr()
     print('\n')
@@ -84,7 +84,7 @@ def test_query(test_container, mock_value_query_result_data,
         command._get_file_name = get_file_name_mock
 
         executer = test_container.executer()
-        executer.execute('test.sql', '1')
+        executer.execute('test.sql', '1', stralign='center')
 
     captured = capsys.readouterr()
     print('\n')
@@ -107,9 +107,9 @@ def test_query_sort_columns(mock_value_query_result_data):
 
 
 # @patch("builtins.open", new_callable=mock_open)
-def test_query_export(test_container, mock_value_query,
+def test_export_query(test_container, mock_value_query,
                       mock_value_data_source_detail, capsys):
-    test_container.config.command.type.from_value('query_export')
+    test_container.config.command.type.from_value('export_query')
 
     expected_format = "\n".join([
         '+------------------------------+',
