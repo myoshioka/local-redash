@@ -71,6 +71,56 @@ class ResponseQuery(BaseModel):
     results: list[Query]
 
 
+class LastModified(BaseModel):
+    id: int
+    name: str
+    email: str
+    auth_type: str
+    is_disabled: bool
+    profile_image_url: str
+    is_invitation_pending: bool
+    groups: list[int]
+    is_email_verified: bool
+    created_at: str
+    active_at: str
+    updated_at: str
+    disabled_at: str | None
+
+
+class Visualization(BaseModel):
+    id: int
+    name: str
+    description: str
+    type: str
+    options: dict
+    created_at: str
+    updated_at: str
+
+
+class QueryDetail(BaseModel):
+    id: int
+    name: str
+    api_key: str
+    schedule: str | None
+    description: str | None
+    tags: list[str]
+    options: dict
+    is_safe: bool
+    is_favorite: bool
+    is_archived: bool
+    is_draft: bool
+    version: int
+    query: str
+    query_hash: str
+    data_source_id: int
+    latest_query_data_id: int | None
+    user: User
+    last_modified_by: LastModified
+    visualizations: list[Visualization]
+    created_at: str
+    updated_at: str
+
+
 class DataSourceType(Enum):
     POSTGRESQL = 'pg'
     MYSQL = 'mysql'
@@ -116,56 +166,6 @@ class DataSourceList(BaseModel):
 
     def dict(self, **kwargs):
         return super().dict(**kwargs)['__root__']
-
-
-class LastModified(BaseModel):
-    id: int
-    name: str
-    email: str
-    auth_type: str
-    is_disabled: bool
-    profile_image_url: str
-    is_invitation_pending: bool
-    groups: list[int]
-    is_email_verified: bool
-    created_at: str
-    active_at: str
-    updated_at: str
-    disabled_at: str | None
-
-
-class Visualization(BaseModel):
-    id: int
-    name: str
-    description: str
-    type: str
-    options: dict
-    created_at: str
-    updated_at: str
-
-
-class QueryUpdate(BaseModel):
-    id: int
-    name: str
-    api_key: str
-    schedule: str | None
-    description: str | None
-    tags: list[str]
-    options: dict
-    is_safe: bool
-    is_favorite: bool
-    is_archived: bool
-    is_draft: bool
-    version: int
-    query: str
-    query_hash: str
-    data_source_id: int
-    latest_query_data_id: int | None
-    user: User
-    last_modified_by: LastModified
-    visualizations: list[Visualization]
-    created_at: str
-    updated_at: str
 
 
 class QueryResulColumn(BaseModel):

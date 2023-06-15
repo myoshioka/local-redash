@@ -59,7 +59,7 @@ def test_query_list(test_container, mock_value_query_list, capsys):
 
 
 def test_query(test_container, mock_value_query_result_data,
-               mock_value_query_update, capsys):
+               mock_value_query_detail, capsys):
     test_container.config.command.type.from_value('query')
 
     expected_format = "\n".join([
@@ -73,7 +73,7 @@ def test_query(test_container, mock_value_query_result_data,
 
     redash_client_mock = mock.Mock()
     redash_client_mock.search_query.return_value = None
-    redash_client_mock.create_query.return_value = mock_value_query_update
+    redash_client_mock.create_query.return_value = mock_value_query_detail
     redash_client_mock.query_result.return_value = mock_value_query_result_data
 
     with test_container.redash_client.override(redash_client_mock):

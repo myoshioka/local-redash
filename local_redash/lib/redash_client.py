@@ -5,8 +5,8 @@ import httpx
 from local_redash.models.redash_client import (DataSourceDetail,
                                                DataSourceList, JobResult,
                                                JobResultStatus, Query,
-                                               QueryList, QueryResultData,
-                                               QueryUpdate)
+                                               QueryDetail, QueryList,
+                                               QueryResultData)
 from timeout_decorator import timeout
 
 QUERY_TIME_OUT = 10
@@ -34,21 +34,21 @@ class RedashClient:
     def update_query(self,
                      query_id: int,
                      query: str,
-                     options: dict | None = None) -> QueryUpdate:
+                     options: dict | None = None) -> QueryDetail:
 
         if options is None or not isinstance(options, dict):
             options = {}
 
         payload = {'query': query, 'options': options}
         result = self._post(f'api/queries/{query_id}', payload)
-        return QueryUpdate.parse_obj(result)
+        return QueryDetail.parse_obj(result)
 
     def create_query(self,
                      data_source_id: str,
                      name: str,
                      query: str,
                      description: str = "",
-                     options: dict | None = None) -> QueryUpdate:
+                     options: dict | None = None) -> QueryDetail:
 
         if options is None or not isinstance(options, dict):
             options = {}
@@ -61,7 +61,11 @@ class RedashClient:
             "options": options
         }
         result = self._post('api/queries', payload)
-        return QueryUpdate.parse_obj(result)
+        return QueryDetail.parse_obj(result)
+
+    def get_query(self, id: int) -> QueryDetail:
+        response = self._get(f'api/queries/{id}')
+        return QueryDetail.parse_obj(response)
 
     def get_data_source(self, id: int) -> DataSourceDetail:
         response = self._get(f'api/data_sources/{id}')

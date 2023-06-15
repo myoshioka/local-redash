@@ -6,10 +6,11 @@ from local_redash.containers import Container
 from local_redash.models.redash_client import (DataSource, DataSourceDetail,
                                                DataSourceList, JobResult,
                                                JobResultStatus, Query,
-                                               QueryList, QueryResulColumn,
+                                               QueryDetail, QueryList,
+                                               QueryResulColumn,
                                                QueryResulRows, QueryResult,
-                                               QueryResultData, QueryUpdate,
-                                               ResponseQuery, Visualization)
+                                               QueryResultData, ResponseQuery,
+                                               Visualization)
 from polyfactory import Use
 from polyfactory.factories.pydantic_factory import ModelFactory
 
@@ -33,8 +34,8 @@ class VisualizationFactory(ModelFactory[Visualization]):
     options = {}
 
 
-class QueryUpdateFactory(ModelFactory[QueryUpdate]):
-    __model__ = QueryUpdate
+class QueryDetailFactory(ModelFactory[QueryDetail]):
+    __model__ = QueryDetail
     options = {}
     visualizations = Use(VisualizationFactory.batch, size=1)
 
@@ -111,8 +112,8 @@ def mock_value_query_result_data():
 
 
 @pytest.fixture
-def mock_value_query_update():
-    return QueryUpdateFactory.build()
+def mock_value_query_detail():
+    return QueryDetailFactory.build()
 
 
 @pytest.fixture
@@ -148,8 +149,8 @@ def response_dataSource_models():
 
 
 @pytest.fixture
-def response_query_update_model():
-    return QueryUpdateFactory.build().dict()
+def response_query_detail_model():
+    return QueryDetailFactory.build().dict()
 
 
 @pytest.fixture

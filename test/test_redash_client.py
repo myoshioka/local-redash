@@ -2,7 +2,7 @@ import httpx
 import pytest
 from local_redash.lib.redash_client import RedashClient
 from local_redash.models.redash_client import (DataSourceList, Query,
-                                               QueryResultData, QueryUpdate)
+                                               QueryDetail, QueryResultData)
 from pytest_httpserver import HTTPServer
 
 
@@ -63,20 +63,20 @@ def test_get_data_source_list_empty(httpserver: HTTPServer):
     assert len(list(result)) == 0
 
 
-def test_update_query(httpserver: HTTPServer, response_query_update_model):
+def test_update_query(httpserver: HTTPServer, response_query_detail_model):
     query_str = 'select * from aaaaa'
     payload = {'query': query_str, 'options': {}}
     httpserver.expect_request(
         '/api/queries/1',
-        json=payload).respond_with_json(response_query_update_model)
+        json=payload).respond_with_json(response_query_detail_model)
 
     client = RedashClient(httpserver.url_for("/"), 'aaaaaaaa')
     result = client.update_query(1, query_str)
 
-    assert type(result) is QueryUpdate
+    assert type(result) is QueryDetail
 
 
-def test_create_query(httpserver: HTTPServer, response_query_update_model):
+def test_create_query(httpserver: HTTPServer, response_query_detail_model):
     query_str = 'select * from aaaaa'
     payload = {
         'data_source_id': '1',
@@ -87,12 +87,12 @@ def test_create_query(httpserver: HTTPServer, response_query_update_model):
     }
     httpserver.expect_request(
         '/api/queries',
-        json=payload).respond_with_json(response_query_update_model)
+        json=payload).respond_with_json(response_query_detail_model)
 
     client = RedashClient(httpserver.url_for("/"), 'aaaaaaaa')
     result = client.create_query('1', 'test', query_str, 'test query')
 
-    assert type(result) is QueryUpdate
+    assert type(result) is QueryDetail
 
 
 def test_query_result(httpserver: HTTPServer,
