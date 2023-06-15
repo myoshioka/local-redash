@@ -18,6 +18,7 @@ class Container(containers.DeclarativeContainer):
         api_key=config.redash.api_key,
     )
 
+    # Commands
     data_source_list_command = providers.Singleton(
         DataSourceListCommand,
         client=redash_client,
@@ -42,6 +43,7 @@ class Container(containers.DeclarativeContainer):
         client=redash_client,
     )
 
+    # Command to execute
     command = providers.Selector(
         config.command.type,
         data_source_list=data_source_list_command,
