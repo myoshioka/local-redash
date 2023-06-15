@@ -6,7 +6,7 @@ from local_redash.lib.redash_client import RedashClient
 from local_redash.models.redash_client import DataSourceType, SqlFormatDialects
 
 
-class QueryExportCommand(Command):
+class ExportQueryCommand(Command):
 
     def __init__(self, client: RedashClient) -> None:
         self._redash_client = client

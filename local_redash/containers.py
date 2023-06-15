@@ -2,8 +2,8 @@ from dependency_injector import containers, providers
 
 from local_redash.command_executer import CommandExecuter
 from local_redash.commands.data_source_list import DataSourceListCommand
+from local_redash.commands.export_query import ExportQueryCommand
 from local_redash.commands.query import QueryCommand
-from local_redash.commands.query_export import QueryExportCommand
 from local_redash.commands.query_list import QueryListCommand
 from local_redash.lib.redash_client import RedashClient
 
@@ -31,8 +31,8 @@ class Container(containers.DeclarativeContainer):
                                              client=redash_client,
                                              columns=config.columns.query_list)
 
-    query_export_command = providers.Singleton(
-        QueryExportCommand,
+    export_query_command = providers.Singleton(
+        ExportQueryCommand,
         client=redash_client,
     )
 
@@ -40,7 +40,7 @@ class Container(containers.DeclarativeContainer):
                                  data_source_list=data_source_list_command,
                                  query=query_command,
                                  query_list=query_list_command,
-                                 query_export=query_export_command)
+                                 export_query=export_query_command)
 
     executer = providers.Factory(
         CommandExecuter,
