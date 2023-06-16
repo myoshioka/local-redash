@@ -6,6 +6,7 @@ from dependency_injector.wiring import Provide, inject
 from dotenv import load_dotenv
 
 from local_redash.containers import Container
+from local_redash.lib.config_file import ConfigFile
 
 os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 
@@ -76,7 +77,8 @@ if __name__ == '__main__':
     container.config.redash.url.from_env("REDASH_URL")
     container.config.redash.api_key.from_env("API_KEY")
     # config
-    container.config.from_yaml(join(dirname(__file__), 'config.yml'))
+    config_file = ConfigFile()
+    container.config.from_yaml(config_file.file_path())
 
     container.wire(modules=[__name__])
 
