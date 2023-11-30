@@ -15,8 +15,6 @@ os.environ['NO_PROXY'] = '127.0.0.1,localhost'
 @click.pass_context
 @inject
 def main(ctx, container: Container = Provide[Container]):
-    click.echo(f'call {ctx.invoked_subcommand}')
-
     container.config.command.type.from_value(
         ctx.invoked_subcommand.replace('-', '_'))
     command_executer = container.executer()
@@ -39,6 +37,7 @@ def query(ctx, query_file, data_source_id):
               help='')
 @click.pass_context
 def data_source_list(ctx, sort_column):
+    click.echo('List of Data Sources')
     ctx.obj.execute(sort_column)
 
 
@@ -50,6 +49,7 @@ def data_source_list(ctx, sort_column):
               help='')
 @click.pass_context
 def query_list(ctx, sort_column):
+    click.echo('List of Query')
     ctx.obj.execute(sort_column)
 
 
@@ -58,6 +58,7 @@ def query_list(ctx, sort_column):
 @click.option('--file-path', required=True, type=str, help='')
 @click.pass_context
 def export_query(ctx, query_name, file_path):
+    click.echo('Export Query')
     ctx.obj.execute(query_name, file_path, stralign='left')
 
 
@@ -65,6 +66,7 @@ def export_query(ctx, query_name, file_path):
 @click.option('--query-id', required=True, type=int, help='')
 @click.pass_context
 def show_query(ctx, query_id):
+    click.echo('Show Query')
     ctx.obj.execute(query_id)
 
 
