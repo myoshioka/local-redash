@@ -28,14 +28,13 @@ class Command:
     def sort_records(self, result_data: ResultData,
                      column_name: str) -> ResultData:
         return sorted(result_data,
-                      key=lambda row: json.dumps(row[column_name]))
+                      key=lambda row: self._sort_key(row[column_name]))
 
     def format_query(self, query_str: str,
                      data_source_type: DataSourceType) -> str:
 
         if data_source_type == DataSourceType.PYTHON:
             return self.format_python_code(query_str)
-            # return query_str
         else:
             return self.format_sql(query_str, data_source_type)
 
@@ -50,3 +49,9 @@ class Command:
 
     def format_python_code(self, python_code: str) -> str:
         return format_file_contents(python_code, fast=False, mode=FileMode())
+
+    def _sort_key(self, value: str | int | dict) -> str | int:
+        if isinstance(value, int):
+            return value
+        else:
+            return json.dumps(value)
