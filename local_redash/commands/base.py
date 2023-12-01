@@ -1,10 +1,12 @@
+import json
 from typing import Callable, TypeAlias, Union
 
 import sqlfluff
 from black import FileMode, format_file_contents
 from local_redash.models.redash_client import DataSourceType, SqlFormatDialects
 
-ResultData: TypeAlias = list[dict[str, Union[str, int]]]
+ResultDataRow: TypeAlias = dict[str, Union[str, int, dict]]
+ResultData: TypeAlias = list[ResultDataRow]
 
 
 class Command:
@@ -20,11 +22,13 @@ class Command:
 
         check: Callable[[tuple[str, str | int]],
                         bool] = lambda item: item[0] in columns
-        return list(map(lambda x: dict(filter(check, x.items())), result_data))
+        return list(
+            map(lambda row: dict(filter(check, row.items())), result_data))
 
     def sort_records(self, result_data: ResultData,
                      column_name: str) -> ResultData:
-        return sorted(result_data, key=lambda record: record[column_name])
+        return sorted(result_data,
+                      key=lambda row: json.dumps(row[column_name]))
 
     def format_query(self, query_str: str,
                      data_source_type: DataSourceType) -> str:
