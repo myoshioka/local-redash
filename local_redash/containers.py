@@ -58,4 +58,5 @@ class Container(containers.DeclarativeContainer):
         command=command,
         tablefmt=config.table_format.tablefmt,
         stralign=config.table_format.stralign,
+        maxcolwidths=config.table_format.maxcolwidths,
     )

@@ -3,3 +3,4 @@ columns:
 table_format:
   tablefmt: 'psql'
   stralign: 'left'
+  maxcolwidths: 50
