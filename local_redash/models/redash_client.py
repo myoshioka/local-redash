@@ -127,6 +127,8 @@ class DataSourceType(Enum):
     BIGQUERY = 'bigquery'
     PYTHON = 'python'
     ATHENA = 'athena'
+    GOOGLE_SPREADSHEETS = 'google_spreadsheets'
+    RESULTS = 'results'
 
 
 class DataSource(BaseModel):
