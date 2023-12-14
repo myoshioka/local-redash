@@ -70,8 +70,7 @@ def show_query(ctx, query_id):
     ctx.obj.execute(query_id)
 
 
-if __name__ == '__main__':
-
+def initialize():
     load_dotenv(join(dirname(__file__), '.env'))
 
     container = Container()
@@ -85,3 +84,7 @@ if __name__ == '__main__':
     container.wire(modules=[__name__])
 
     main()
+
+
+if __name__ == '__main__':
+    initialize()
