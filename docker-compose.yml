@@ -35,7 +35,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.db
-    # image: postgres:9.5.6-alpine
     volumes:
       - postgresql-data:/var/lib/postgresql/data
     ports:
