@@ -21,12 +21,16 @@ pip install local-redash
 ## Configuration
 
 The configuration file is automatically created in `~/.config/local_redash/config.yml` at first startup. See the file itself for a description of all available options.
+The data is displayed using [python-tabulate](https://github.com/astanin/python-tabulate), which can be configured in the `table_format` of the config.yml.
 
 ## Usage
 
 ### Set environment variables
 
 - Set the redash api url and api key to environment variables
+  - **REDASH_URL**: Sets the API endpoint, which will be the base URL for Redash.
+  - **API_KEY**: Set the redash API key.You can find it on the User Profiles page.
+- Check the [redash](https://redash.io/help/user-guide/integrations-and-api/api) documentation for details.
 
 ```bash
 $ export REDASH_URL=YOUR_REDASH_API_URL
@@ -73,16 +77,23 @@ $ local-redash show-query --query-id [query id]
 - Run query
 
 ```bash
-$ local-redash query --query-id [query id]
+$ local-redash query --query-file [query file path] --data-source-id [data source]
+
+ex. $ local-redash query --query-file ./select_test.sql --data-source-id 1
 ```
 
+- Export query
+
+```bash
+$ local-redash export-query --query-name [query name] ----file-path [file path]
+
+ex. $ local-redash export-query --query-name "query_test" --file-path ./
+```
 
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
 
 ## License
 
