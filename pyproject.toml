@@ -1,8 +1,13 @@
 [tool.poetry]
 name = "local-redash"
-version = "0.1.0"
+version = "0.0.1"
 description = ""
 authors = ["Makoto Yoshioka <y.mako2@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/myoshioka/local-redash"
+repository = "https://github.com/myoshioka/local-redash"
+keywords = ["redash", "sql"]
 
 [tool.poetry.scripts]
 local-redash = 'local_redash.main:initialize'
