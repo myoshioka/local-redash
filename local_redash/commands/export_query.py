@@ -9,7 +9,20 @@ class ExportQueryCommand(Command):
     def __init__(self, client: RedashClient) -> None:
         self._redash_client = client
 
-    def execute(self, query_name: str, file_path: str) -> ResultData:
+    def execute(self, query_key: str | int, file_path: str) -> ResultData:
+        print(query_key)
+
+        if type(query_key) == str:
+            return self.from_query_name(query_key, file_path)
+        elif type(query_key) == int:
+            return self.from_query_id(query_key, file_path)
+        else:
+            pass
+
+    def from_query_id(self, query_id: int, file_path: str) -> ResultData:
+        pass
+
+    def from_query_name(self, query_name: str, file_path: str) -> ResultData:
         if not os.path.isdir(file_path):
             return []
         file_path = file_path.rstrip(os.path.sep)

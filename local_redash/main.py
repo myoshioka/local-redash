@@ -2,6 +2,7 @@ import os
 from os.path import dirname, join
 
 import click
+from click_option_group import RequiredMutuallyExclusiveOptionGroup, optgroup
 from dependency_injector.wiring import Provide, inject
 from dotenv import load_dotenv
 
@@ -54,12 +55,17 @@ def query_list(ctx, sort_column):
 
 
 @main.command()
-@click.option('--query-name', required=True, type=str, help='')
+@optgroup.group('Specify query',
+                cls=RequiredMutuallyExclusiveOptionGroup,
+                help='Specify query to export')
+@optgroup.option('--query-name', type=str, help='Query name')
+@optgroup.option('--query-id', type=int, help='Query id')
 @click.option('--file-path', required=True, type=str, help='')
 @click.pass_context
-def export_query(ctx, query_name, file_path):
+def export_query(ctx, query_name, query_id, file_path):
     click.echo('Export Query')
-    ctx.obj.execute(query_name, file_path, stralign='left')
+    query_key: str | int = query_name if query_name else query_id
+    ctx.obj.execute(query_key, file_path, stralign='left')
 
 
 @main.command()
