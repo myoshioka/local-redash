@@ -10,8 +10,6 @@ class ExportQueryCommand(Command):
         self._redash_client = client
 
     def execute(self, query_key: str | int, file_path: str) -> ResultData:
-        print(query_key)
-
         if type(query_key) == str:
             return self.from_query_name(query_key, file_path)
         elif type(query_key) == int:
