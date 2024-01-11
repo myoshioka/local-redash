@@ -1,4 +1,5 @@
 import time
+from ctypes import resize
 from typing import Any
 
 import httpx
@@ -63,9 +64,15 @@ class RedashClient:
         result = self._post('api/queries', payload)
         return QueryDetail.parse_obj(result)
 
-    def get_query(self, id: int) -> QueryDetail:
-        response = self._get(f'api/queries/{id}')
-        return QueryDetail.parse_obj(response)
+    def get_query(self, id: int) -> QueryDetail | None:
+        try:
+            response = self._get(f'api/queries/{id}')
+            return QueryDetail.parse_obj(response)
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 404:
+                return None
+            else:
+                raise exc
 
     def get_data_source(self, id: int) -> DataSourceDetail:
         response = self._get(f'api/data_sources/{id}')
