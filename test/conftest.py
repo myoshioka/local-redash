@@ -120,9 +120,8 @@ def mock_value_query_result_data():
 @pytest.fixture
 def mock_value_query_detail():
     return QueryDetailFactory.build(
-        query=
-        'select id,email,admin,first_name,last_name from users where id = 7327 or id = 7328',
-        name='query_test')
+        query=get_test_data('query_list.json')[0]['query'],
+        name=get_test_data('query_list.json')[0]['name'])
 
 
 @pytest.fixture
