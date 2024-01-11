@@ -30,6 +30,10 @@ class CommandExecuter:
         converted_result = list(
             map(lambda row: self.convert_values_to_string(row), result))
 
+        if len(converted_result) == 0:
+            print('Data does not exist.')
+            return
+
         print(
             tabulate(
                 converted_result,
