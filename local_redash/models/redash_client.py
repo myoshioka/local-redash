@@ -101,24 +101,24 @@ class QueryDetail(BaseModel):
     id: int
     name: str
     api_key: str
-    schedule: QuerySchedule | None
     description: str | None
-    tags: list[str]
-    options: dict
-    is_safe: bool
-    is_favorite: bool
     is_archived: bool
     is_draft: bool
-    version: int
+    is_favorite: bool
+    is_safe: bool
+    data_source_id: int
+    last_modified_by: LastModified
+    latest_query_data_id: int | None
+    options: dict
     query: str
     query_hash: str
-    data_source_id: int
-    latest_query_data_id: int | None
+    schedule: QuerySchedule | None
+    tags: list[str]
+    version: int
     user: User
-    last_modified_by: LastModified
     visualizations: list[Visualization]
-    created_at: str
     updated_at: str
+    created_at: str
 
 
 class DataSourceType(Enum):
