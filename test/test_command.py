@@ -108,7 +108,8 @@ def test_query_sort_columns(mock_value_query_result_data):
 
 # @patch("builtins.open", new_callable=mock_open)
 def test_export_query(test_container, mock_value_query,
-                      mock_value_data_source_detail, capsys):
+                      mock_value_query_detail, mock_value_data_source_detail,
+                      capsys):
     test_container.config.command.type.from_value('export_query')
 
     expected_format = "\n".join([
@@ -127,6 +128,8 @@ def test_export_query(test_container, mock_value_query,
     ])
     redash_client_mock = mock.Mock()
     redash_client_mock.search_query.return_value = mock_value_query
+    redash_client_mock.get_query.return_value = mock_value_query_detail
+
     redash_client_mock.get_data_source.return_value = mock_value_data_source_detail
     save_query_mock = MagicMock(return_value=True)
 
