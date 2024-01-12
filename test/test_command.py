@@ -106,10 +106,49 @@ def test_query_sort_columns(mock_value_query_result_data):
         assert keys == sorted_columns
 
 
-# @patch("builtins.open", new_callable=mock_open)
-def test_export_query(test_container, mock_value_query,
-                      mock_value_query_detail, mock_value_data_source_detail,
-                      capsys):
+def test_export_query_by_query_id(test_container, mock_value_query_detail,
+                                  mock_value_data_source_detail, capsys):
+    test_container.config.command.type.from_value('export_query')
+
+    expected_format = "\n".join([
+        '+------------------------------+',
+        '| exported-query               |',
+        '|------------------------------|',
+        '| select                       |',
+        '|     id,                      |',
+        '|     email,                   |',
+        '|     admin,                   |',
+        '|     first_name,              |',
+        '|     last_name                |',
+        '| from users                   |',
+        '| where id = 7327 or id = 7328 |',
+        '+------------------------------+',
+    ])
+    redash_client_mock = mock.Mock()
+    redash_client_mock.get_query.return_value = mock_value_query_detail
+    redash_client_mock.get_data_source.return_value = mock_value_data_source_detail
+    save_query_mock = MagicMock(return_value=True)
+    with test_container.redash_client.override(redash_client_mock):
+        command = test_container.command()
+        command._save_query = save_query_mock
+
+        executer = test_container.executer()
+        executer.execute(1, './', stralign='left')
+
+    save_query_mock.assert_called_once_with(
+        'select\n    id,\n    email,\n    admin,\n    first_name,\n    last_name\nfrom users\nwhere id = 7327 or id = 7328\n',
+        './query_test.sql')
+
+    captured = capsys.readouterr()
+    print('\n')
+    print(captured.out)
+    print(expected_format)
+    assert captured.out.splitlines() == expected_format.splitlines()
+
+
+def test_export_query_by_query_name(test_container, mock_value_query,
+                                    mock_value_query_detail,
+                                    mock_value_data_source_detail, capsys):
     test_container.config.command.type.from_value('export_query')
 
     expected_format = "\n".join([
