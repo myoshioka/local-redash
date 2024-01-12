@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock
 
 from local_redash.commands.query import QueryCommand
 from local_redash.lib.redash_client import RedashClient
