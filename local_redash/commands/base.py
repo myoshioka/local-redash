@@ -3,7 +3,9 @@ from typing import Callable, TypeAlias, Union
 
 import sqlfluff
 from black import FileMode, format_file_contents
-from local_redash.models.redash_client import DataSourceType, SqlFormatDialects
+from local_redash.models.redash_client import (DataSourceType, QueryResulRows,
+                                               QueryResultData,
+                                               SqlFormatDialects)
 
 ResultDataRow: TypeAlias = dict[str, Union[str, int, dict]]
 ResultData: TypeAlias = list[ResultDataRow]
@@ -55,3 +57,22 @@ class Command:
             return value
         else:
             return json.dumps(value)
+
+    def _sort_columns(self, query_result_data: QueryResultData):
+        """
+        To be in the order of sql SELECT.
+        Sort in the same order as the columns key.
+        """
+        columns = [
+            resul_column.friendly_name
+            for resul_column in query_result_data.columns
+        ]
+
+        sorted_result_data_dict_list = [{
+            key: row[key]
+            for key in columns
+        } for row in query_result_data.rows.dict()]
+
+        return QueryResultData(
+            rows=QueryResulRows.parse_obj(sorted_result_data_dict_list),
+            columns=query_result_data.columns)
