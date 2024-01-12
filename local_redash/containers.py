@@ -5,6 +5,7 @@ from local_redash.commands.data_source_list import DataSourceListCommand
 from local_redash.commands.export_query import ExportQueryCommand
 from local_redash.commands.query import QueryCommand
 from local_redash.commands.query_list import QueryListCommand
+from local_redash.commands.run_query import RunQueryCommand
 from local_redash.commands.show_query import ShowQueryCommand
 from local_redash.lib.redash_client import RedashClient
 
@@ -26,6 +27,11 @@ class Container(containers.DeclarativeContainer):
 
     query_command = providers.Singleton(
         QueryCommand,
+        client=redash_client,
+    )
+
+    run_query_command = providers.Singleton(
+        RunQueryCommand,
         client=redash_client,
     )
 
@@ -51,6 +57,7 @@ class Container(containers.DeclarativeContainer):
         query_list=query_list_command,
         export_query=export_query_command,
         show_query=show_query_command,
+        run_query=run_query_command,
     )
 
     executer = providers.Factory(

@@ -27,7 +27,16 @@ def main(ctx, container: Container = Provide[Container]):
 @click.option('--data-source-id', required=True, type=int, help='')
 @click.pass_context
 def query(ctx, query_file, data_source_id):
+    click.echo('Run query in Sql file.')
     ctx.obj.execute(query_file, data_source_id)
+
+
+@main.command()
+@click.option('--query-id', required=True, type=int, help='')
+@click.pass_context
+def run_query(ctx, query_id):
+    click.echo('Run query.')
+    ctx.obj.execute(query_id)
 
 
 @main.command()
