@@ -9,8 +9,11 @@ class ShowQueryCommand(Command):
 
     def execute(self, query_id: int) -> ResultData:
         query = self._redash_client.get_query(query_id)
-        data_source = self._redash_client.get_data_source(query.data_source_id)
 
-        formatted_query = self.format_query(query.query, data_source.type)
-
-        return [{'query': formatted_query}]
+        if query is not None:
+            data_source = self._redash_client.get_data_source(
+                query.data_source_id)
+            formatted_query = self.format_query(query.query, data_source.type)
+            return [{'query': formatted_query}]
+        else:
+            return []
