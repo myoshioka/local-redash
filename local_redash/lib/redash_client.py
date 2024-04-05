@@ -1,8 +1,11 @@
+import json
+import sys
 import time
 from ctypes import resize
 from typing import Any
 
 import httpx
+from local_redash.exceptions import AuthenticationError
 from local_redash.models.redash_client import (DataSourceDetail,
                                                DataSourceList, JobResult,
                                                JobResultStatus, Query,
@@ -21,6 +24,7 @@ class RedashClient:
 
         self.redash_url = redash_url
         self.request_headers = {"Authorization": f"Key {api_key}"}
+        self._authentication()
 
     def search_query(self, search_name: str) -> Query | None:
         all_queries = self.get_query_list()
@@ -100,6 +104,11 @@ class RedashClient:
 
         return QueryResultData.parse_obj(response['query_result']['data'])
 
+    def _authentication(self):
+        # Request for authentication check. Because each API has a
+        # different response code for authentication errors.
+        self._get('api/users')
+
     @timeout(QUERY_TIME_OUT)
     def _polling_job(self, job_id: str) -> int | None:
         job_status: int | None = None
@@ -143,15 +152,60 @@ class RedashClient:
             ]
 
     def _get(self, path: str, params=None) -> Any:
-        response = httpx.get(f"{self.redash_url}/{path}",
-                             headers=self.request_headers,
-                             params=params)
-        response.raise_for_status()
-        return response.json()
+        response = None
+        try:
+            response = httpx.get(f"{self.redash_url}/{path}",
+                                 headers=self.request_headers,
+                                 params=params)
+            response.raise_for_status()
+            return response.json()
+        except Exception as exc:
+            if self._is_authentication_error(response):
+                # Without printing a traceback
+                sys.tracebacklimit = -1
+                raise AuthenticationError() from None
+            else:
+                self._print_response_error(response)
+                raise exc
 
     def _post(self, path: str, payload=None) -> Any:
-        response = httpx.post(f"{self.redash_url}/{path}",
-                              headers=self.request_headers,
-                              json=payload)
-        response.raise_for_status()
-        return response.json()
+        response = None
+        try:
+            response = httpx.post(f"{self.redash_url}/{path}",
+                                  headers=self.request_headers,
+                                  json=payload)
+            response.raise_for_status()
+            return response.json()
+        except Exception as exc:
+            if self._is_authentication_error(response):
+                # Without printing a traceback
+                sys.tracebacklimit = -1
+                raise AuthenticationError() from None
+            else:
+                self._print_response_error(response)
+                raise exc
+
+    def _print_response_error(self, response: httpx.Response | None) -> None:
+        print('Error: API request failed.')
+        if response is not None:
+            if self._is_json(response.content):
+                print(f'Response body: {response.json()}')
+            else:
+                print(response.text)
+
+    def _is_json(self, json_constant) -> bool:
+        try:
+            json.loads(json_constant)
+        except ValueError as e:
+            return False
+        return True
+
+    def _is_authentication_error(self,
+                                 response: httpx.Response | None) -> bool:
+        if response is not None and self._is_json(
+                response.content) and 'message' in response.json().keys():
+            if response.json(
+            )['message'] == "Couldn't find resource. Please login and try again.":
+                return True
+
+        return False
