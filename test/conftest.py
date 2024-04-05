@@ -13,6 +13,7 @@ from local_redash.models.redash_client import (DataSource, DataSourceDetail,
                                                Visualization)
 from polyfactory import Use
 from polyfactory.factories.pydantic_factory import ModelFactory
+from pytest_httpserver import HTTPServer
 
 
 def get_test_data(filename):
@@ -74,6 +75,12 @@ class QueryResultFactory(ModelFactory[QueryResult]):
 
 
 # fixture
+@pytest.fixture()
+def httpserver(make_httpserver):
+    server = make_httpserver
+    server.expect_request('/api/users').respond_with_json({"message": "OK"})
+    yield server
+    server.clear()
 
 
 @pytest.fixture

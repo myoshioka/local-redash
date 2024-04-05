@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 from local_redash.commands.query import QueryCommand
 from local_redash.lib.redash_client import RedashClient
+from pytest_httpserver import HTTPServer
 
 
 def test_data_source_list(test_container, mock_value_data_source_list, capsys):
@@ -94,8 +95,9 @@ def test_query(test_container, mock_value_query_result_data,
     assert captured.out.splitlines() == expected_format.splitlines()
 
 
-def test_query_sort_columns(mock_value_query_result_data):
-    client = RedashClient('http://dummy', 'aaaaaaaa')
+def test_query_sort_columns(httpserver: HTTPServer,
+                            mock_value_query_result_data):
+    client = RedashClient(httpserver.url_for("/"), 'aaaaaaaa')
     query_command = QueryCommand(client)
     result_data = query_command._sort_columns(mock_value_query_result_data)
 
