@@ -90,10 +90,17 @@ class RedashClient:
         result = self._get_paginate('api/queries')
         return QueryList.parse_obj(result)
 
-    def query_result(self, query_id: int, params={}) -> QueryResultData:
-        payload = {'max_age': 0, 'parameters': params}
-        results_response = self._post(f'api/queries/{query_id}/results',
-                                      payload)
+    def query_result(self, query_id: int, params={}) -> QueryResultData | None:
+        try:
+            payload = {'max_age': 0, 'parameters': params}
+            results_response = self._post(f'api/queries/{query_id}/results',
+                                          payload)
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 404:
+                return None
+            else:
+                raise exc
+
         result_id = self._polling_job(results_response['job']['id'])
 
         if result_id is None:
