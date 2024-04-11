@@ -1,3 +1,5 @@
+from unittest import expectedFailure
+
 import httpx
 import pytest
 from local_redash.lib.redash_client import RedashClient
@@ -160,12 +162,52 @@ def test_get_with_param(httpserver: HTTPServer):
     assert result == {'foo': 'bar'}
 
 
-def test_get_error(httpserver: HTTPServer):
+def test_get_error(httpserver: HTTPServer, capsys):
+    # response json
     httpserver.expect_request('/foo').respond_with_json({'error': '400'},
                                                         status=400)
     client = RedashClient(httpserver.url_for('/'), 'aaaaaaaa')
     with pytest.raises(httpx.HTTPStatusError, match='400 BAD REQUEST'):
         client._get('foo')
+
+    expected_stdout = '\n'.join([
+        "Error: API request failed.",
+        "Response body: {'error': '400'}",
+        "",
+    ])
+    captured = capsys.readouterr()
+    assert captured.out == expected_stdout
+
+    # response test
+    httpserver.expect_request('/foo-text').respond_with_data('error: 400',
+                                                             status=400)
+    client = RedashClient(httpserver.url_for('/'), 'aaaaaaaa')
+    with pytest.raises(httpx.HTTPStatusError, match='400 BAD REQUEST'):
+        client._get('foo-text')
+
+    expected_stdout = '\n'.join([
+        "Error: API request failed.",
+        "Response body: error: 400",
+        "",
+    ])
+    captured = capsys.readouterr()
+    assert captured.out == expected_stdout
+
+
+def test_post_error(httpserver: HTTPServer, capsys):
+    httpserver.expect_request('/foo').respond_with_json({'error': '400'},
+                                                        status=400)
+    client = RedashClient(httpserver.url_for('/'), 'aaaaaaaa')
+    with pytest.raises(httpx.HTTPStatusError, match='400 BAD REQUEST'):
+        client._post('foo')
+
+    expected_stdout = '\n'.join([
+        "Error: API request failed.",
+        "Response body: {'error': '400'}",
+        "",
+    ])
+    captured = capsys.readouterr()
+    assert captured.out == expected_stdout
 
 
 def test_post_with_body(httpserver: HTTPServer):
