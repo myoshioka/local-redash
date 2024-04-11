@@ -58,15 +58,20 @@ class RedashClient:
         if options is None or not isinstance(options, dict):
             options = {}
 
-        payload = {
-            "data_source_id": data_source_id,
-            "name": name,
-            "query": query,
-            "description": description,
-            "options": options
-        }
-        result = self._post('api/queries', payload)
-        return QueryDetail.parse_obj(result)
+        try:
+            payload = {
+                "data_source_id": data_source_id,
+                "name": name,
+                "query": query,
+                "description": description,
+                "options": options
+            }
+            result = self._post('api/queries', payload)
+            return QueryDetail.parse_obj(result)
+        except httpx.HTTPStatusError as exc:
+            # Without printing a traceback
+            sys.tracebacklimit = -1
+            raise Exception('Failed to create query.') from None
 
     def get_query(self, id: int) -> QueryDetail | None:
         try:
@@ -130,6 +135,9 @@ class RedashClient:
                 job_query_result_id = job_result.query_result_id
                 break
             if job_status == JobResultStatus.FAILED:
+                # Without printing a traceback
+                sys.tracebacklimit = -1
+                print(job_result.error)
                 raise Exception('Query execution failed.')
 
             time.sleep(1)
@@ -198,7 +206,7 @@ class RedashClient:
             if self._is_json(response.content):
                 print(f'Response body: {response.json()}')
             else:
-                print(response.text)
+                print(f'Response body: {response.text}')
 
     def _is_json(self, json_constant) -> bool:
         try:
