@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "local-redash"
-version = "0.0.1"
+version = "0.0.2"
 description = ""
 authors = ["Makoto Yoshioka <y.mako2@gmail.com>"]
 license = "MIT"
